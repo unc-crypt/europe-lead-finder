@@ -20,8 +20,9 @@ const Dashboard = () => {
 
   const filtered = useMemo(() => {
     return mockLeads.filter((l) => {
-      const q = query.toLowerCase();
-      const matchesQuery = !q || l.firstName.toLowerCase().includes(q) || l.lastName.toLowerCase().includes(q) || l.company.toLowerCase().includes(q) || l.email.toLowerCase().includes(q) || l.title.toLowerCase().includes(q) || l.domain.toLowerCase().includes(q);
+      const terms = query.toLowerCase().split(/[\s@]+/).filter(Boolean);
+      const searchable = `${l.firstName} ${l.lastName} ${l.company} ${l.email} ${l.title} ${l.domain} ${l.industry}`.toLowerCase();
+      const matchesQuery = terms.length === 0 || terms.every((t) => searchable.includes(t));
       const matchesCountry = country === "All Countries" || l.country === country;
       const matchesIndustry = industry === "All Industries" || l.industry === industry;
       const matchesSize = companySize === "All Sizes" || l.companySize === companySize;
