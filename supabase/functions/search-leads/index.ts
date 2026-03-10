@@ -134,20 +134,36 @@ Deno.serve(async (req) => {
 
     console.log("Apollo request:", JSON.stringify(apolloBody));
 
-    // Call Apollo People Search API
-    const apolloRes = await fetch("https://api.apollo.io/v1/mixed_people/search", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Cache-Control": "no-cache",
-        "X-Api-Key": APOLLO_API_KEY,
-      },
-      body: JSON.stringify(apolloBody),
-    });
+    // Try people/search first (available on free plan), fall back to mixed_people/search
+    const endpoints = [
+      "https://api.apollo.io/v1/people/search",
+      "https://api.apollo.io/v1/mixed_people/search",
+    ];
 
-    if (!apolloRes.ok) {
-      const errText = await apolloRes.text();
-      throw new Error(`Apollo API error [${apolloRes.status}]: ${errText}`);
+    let apolloRes: Response | null = null;
+    let lastError = "";
+
+    for (const endpoint of endpoints) {
+      console.log("Trying endpoint:", endpoint);
+      apolloRes = await fetch(endpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Cache-Control": "no-cache",
+          "X-Api-Key": APOLLO_API_KEY,
+        },
+        body: JSON.stringify(apolloBody),
+      });
+
+      if (apolloRes.ok) break;
+
+      lastError = await apolloRes.text();
+      console.log(`Endpoint ${endpoint} failed [${apolloRes.status}]: ${lastError}`);
+      apolloRes = null;
+    }
+
+    if (!apolloRes) {
+      throw new Error(`Apollo API error: ${lastError}`);
     }
 
     const apolloData = await apolloRes.json();
