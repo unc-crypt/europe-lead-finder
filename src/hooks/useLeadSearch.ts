@@ -45,7 +45,7 @@ export function useLeadSearch() {
   const search = async (params: SearchParams) => {
     setLoading(true);
     try {
-      const { data, error } = await supabase.functions.invoke("search-leads", {
+      const { data, error } = await supabase.functions.invoke("scrape-leads", {
         body: {
           query: params.query,
           country: params.country,
