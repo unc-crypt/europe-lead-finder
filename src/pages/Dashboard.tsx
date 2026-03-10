@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -6,8 +6,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import Navbar from "@/components/Navbar";
 import LeadTable from "@/components/LeadTable";
 import LeadDetail from "@/components/LeadDetail";
-import { mockLeads, countries, industries, companySizes, seniorityLevels, Lead } from "@/lib/mock-data";
-import { Search, SlidersHorizontal, Download } from "lucide-react";
+import { countries, industries, companySizes, seniorityLevels } from "@/lib/mock-data";
+import { useLeadSearch, Lead } from "@/hooks/useLeadSearch";
+import { Search, Download, Loader2 } from "lucide-react";
 
 const Dashboard = () => {
   const [searchParams] = useSearchParams();
@@ -18,18 +19,33 @@ const Dashboard = () => {
   const [seniority, setSeniority] = useState("All Levels");
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
 
-  const filtered = useMemo(() => {
-    return mockLeads.filter((l) => {
-      const terms = query.toLowerCase().split(/[\s@]+/).filter(Boolean);
-      const searchable = `${l.firstName} ${l.lastName} ${l.company} ${l.email} ${l.title} ${l.domain} ${l.industry}`.toLowerCase();
-      const matchesQuery = terms.length === 0 || terms.every((t) => searchable.includes(t));
-      const matchesCountry = country === "All Countries" || l.country === country;
-      const matchesIndustry = industry === "All Industries" || l.industry === industry;
-      const matchesSize = companySize === "All Sizes" || l.companySize === companySize;
-      const matchesSeniority = seniority === "All Levels" || l.seniority === seniority;
-      return matchesQuery && matchesCountry && matchesIndustry && matchesSize && matchesSeniority;
+  const { leads, total, page, loading, search } = useLeadSearch();
+
+  const handleSearch = useCallback(() => {
+    search({
+      query,
+      country,
+      industry,
+      companySize,
+      seniority,
+      page: 1,
     });
-  }, [query, country, industry, companySize, seniority]);
+  }, [query, country, industry, companySize, seniority, search]);
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") handleSearch();
+  };
+
+  const handlePageChange = (newPage: number) => {
+    search({
+      query,
+      country,
+      industry,
+      companySize,
+      seniority,
+      page: newPage,
+    });
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -38,7 +54,9 @@ const Dashboard = () => {
         <div className="flex items-center justify-between mb-6">
           <div>
             <h1 className="font-display text-2xl font-bold">Search Leads</h1>
-            <p className="text-sm text-muted-foreground mt-1">{filtered.length} contacts found</p>
+            <p className="text-sm text-muted-foreground mt-1">
+              {total > 0 ? `${total.toLocaleString()} contacts found` : "Search across 250M+ contacts worldwide"}
+            </p>
           </div>
           <Button variant="outline" className="gap-2">
             <Download className="h-4 w-4" /> Export All
@@ -47,14 +65,21 @@ const Dashboard = () => {
 
         {/* Search & Filters */}
         <div className="space-y-4 mb-8">
-          <div className="relative">
-            <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <Input
-              placeholder="Search by name, company, domain, job title..."
-              className="h-11 pl-10"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-            />
+          <div className="flex gap-2">
+            <div className="relative flex-1">
+              <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                placeholder="Try: lawyers @ libero.it, CTO @ gmx.de, engineers @ abv.bg..."
+                className="h-11 pl-10"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                onKeyDown={handleKeyDown}
+              />
+            </div>
+            <Button onClick={handleSearch} disabled={loading} className="h-11 px-6 gap-2">
+              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
+              Search
+            </Button>
           </div>
           <div className="flex flex-wrap gap-3">
             <Select value={country} onValueChange={setCountry}>
@@ -76,7 +101,39 @@ const Dashboard = () => {
           </div>
         </div>
 
-        <LeadTable leads={filtered} onViewLead={setSelectedLead} />
+        {/* Results */}
+        {loading ? (
+          <div className="flex items-center justify-center py-20">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            <span className="ml-3 text-muted-foreground">Searching Apollo database...</span>
+          </div>
+        ) : leads.length > 0 ? (
+          <>
+            <LeadTable leads={leads} onViewLead={setSelectedLead} />
+            {/* Pagination */}
+            {total > 25 && (
+              <div className="flex items-center justify-between mt-6">
+                <p className="text-sm text-muted-foreground">
+                  Showing {(page - 1) * 25 + 1}-{Math.min(page * 25, total)} of {total.toLocaleString()}
+                </p>
+                <div className="flex gap-2">
+                  <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => handlePageChange(page - 1)}>
+                    Previous
+                  </Button>
+                  <Button variant="outline" size="sm" disabled={page * 25 >= total} onClick={() => handlePageChange(page + 1)}>
+                    Next
+                  </Button>
+                </div>
+              </div>
+            )}
+          </>
+        ) : (
+          <div className="text-center py-20 text-muted-foreground">
+            <Search className="h-12 w-12 mx-auto mb-4 opacity-30" />
+            <p className="text-lg font-medium">Search for leads</p>
+            <p className="text-sm mt-1">Try "lawyers @ libero.it" or "CTO Germany" to find contacts</p>
+          </div>
+        )}
 
         {selectedLead && <LeadDetail lead={selectedLead} onClose={() => setSelectedLead(null)} />}
       </div>
