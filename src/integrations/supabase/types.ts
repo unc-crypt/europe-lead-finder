@@ -14,7 +14,72 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      leads: {
+        Row: {
+          apollo_id: string | null
+          company: string | null
+          company_size: string | null
+          confidence: number | null
+          country: string | null
+          created_at: string | null
+          domain: string | null
+          email: string | null
+          first_name: string
+          id: string
+          industry: string | null
+          last_name: string
+          linkedin_url: string | null
+          phone: string | null
+          raw_data: Json | null
+          seniority: string | null
+          title: string | null
+          updated_at: string | null
+          verified: string | null
+        }
+        Insert: {
+          apollo_id?: string | null
+          company?: string | null
+          company_size?: string | null
+          confidence?: number | null
+          country?: string | null
+          created_at?: string | null
+          domain?: string | null
+          email?: string | null
+          first_name: string
+          id?: string
+          industry?: string | null
+          last_name: string
+          linkedin_url?: string | null
+          phone?: string | null
+          raw_data?: Json | null
+          seniority?: string | null
+          title?: string | null
+          updated_at?: string | null
+          verified?: string | null
+        }
+        Update: {
+          apollo_id?: string | null
+          company?: string | null
+          company_size?: string | null
+          confidence?: number | null
+          country?: string | null
+          created_at?: string | null
+          domain?: string | null
+          email?: string | null
+          first_name?: string
+          id?: string
+          industry?: string | null
+          last_name?: string
+          linkedin_url?: string | null
+          phone?: string | null
+          raw_data?: Json | null
+          seniority?: string | null
+          title?: string | null
+          updated_at?: string | null
+          verified?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
