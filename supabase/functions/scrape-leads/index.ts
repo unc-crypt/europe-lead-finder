@@ -363,7 +363,7 @@ async function scrapeAndStore(
 
     const { error: upsertError } = await supabase
       .from("leads")
-      .upsert(dbLeads, { onConflict: "email", ignoreDuplicates: true });
+      .upsert(dbLeads, { onConflict: "email" });
 
     if (upsertError) {
       console.error("DB upsert error:", upsertError);
