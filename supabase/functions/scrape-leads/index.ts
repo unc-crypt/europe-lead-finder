@@ -268,7 +268,6 @@ async function firecrawlSearch(
       body: JSON.stringify({
         query,
         limit,
-        scrapeOptions: { formats: ["markdown"] },
       }),
     });
 
