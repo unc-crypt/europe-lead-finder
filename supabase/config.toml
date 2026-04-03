@@ -8,3 +8,6 @@ verify_jwt = false
 
 [functions.bulk-scrape]
 verify_jwt = false
+
+[functions.pdl-import]
+verify_jwt = false
