@@ -33,37 +33,88 @@ export const mockLeads: Lead[] = [
 
 export const countries = [
   "All Countries",
-  "Bulgaria", "Germany", "France", "Italy", "Spain", "Netherlands", "Poland",
-  "Russia", "Sweden", "Austria", "Czech Republic", "Romania", "Ukraine",
-  "Hong Kong", "Japan", "China", "India", "South Korea", "Singapore",
-  "Brazil", "Argentina", "Mexico", "Canada", "United States",
-  "Australia", "New Zealand", "South Africa", "Nigeria",
+  // Europe (primary focus)
+  "Albania", "Andorra", "Austria", "Belarus", "Belgium", "Bosnia and Herzegovina",
+  "Bulgaria", "Croatia", "Cyprus", "Czech Republic", "Denmark", "Estonia",
+  "Finland", "France", "Germany", "Greece", "Hungary", "Iceland", "Ireland",
+  "Italy", "Kosovo", "Latvia", "Liechtenstein", "Lithuania", "Luxembourg",
+  "Malta", "Moldova", "Monaco", "Montenegro", "Netherlands", "North Macedonia",
+  "Norway", "Poland", "Portugal", "Romania", "Russia", "San Marino", "Serbia",
+  "Slovakia", "Slovenia", "Spain", "Sweden", "Switzerland", "Turkey", "Ukraine",
+  "United Kingdom",
+  // Asia
+  "China", "Hong Kong", "India", "Indonesia", "Japan", "Malaysia",
+  "Philippines", "Singapore", "South Korea", "Taiwan", "Thailand", "Vietnam",
+  // Americas
+  "Argentina", "Brazil", "Canada", "Chile", "Colombia", "Mexico", "United States",
+  // Africa
+  "Egypt", "Kenya", "Morocco", "Nigeria", "South Africa",
+  // Oceania
+  "Australia", "New Zealand",
 ];
 
 export const europeanCountries = [
-  "Bulgaria", "Germany", "France", "Italy", "Spain", "Netherlands", "Poland",
-  "Russia", "Sweden", "Austria", "Czech Republic", "Romania", "Ukraine",
+  "Albania", "Andorra", "Austria", "Belarus", "Belgium", "Bosnia and Herzegovina",
+  "Bulgaria", "Croatia", "Cyprus", "Czech Republic", "Denmark", "Estonia",
+  "Finland", "France", "Germany", "Greece", "Hungary", "Iceland", "Ireland",
+  "Italy", "Kosovo", "Latvia", "Liechtenstein", "Lithuania", "Luxembourg",
+  "Malta", "Moldova", "Monaco", "Montenegro", "Netherlands", "North Macedonia",
+  "Norway", "Poland", "Portugal", "Romania", "Russia", "San Marino", "Serbia",
+  "Slovakia", "Slovenia", "Spain", "Sweden", "Switzerland", "Turkey", "Ukraine",
+  "United Kingdom",
 ];
 
 export const industries = [
   "All Industries", "Technology", "SaaS", "FinTech", "Marketing", "Consulting",
   "AI/ML", "Healthcare", "E-commerce", "Manufacturing", "Education",
+  "Legal", "Real Estate", "Insurance", "Banking", "Telecommunications",
+  "Automotive", "Energy", "Pharmaceuticals", "Media & Entertainment",
+  "Logistics & Transportation", "Agriculture", "Construction", "Retail",
+  "Government", "Non-Profit",
 ];
 
-export const companySizes = ["All Sizes", "1-10", "10-50", "50-200", "200-500", "500+"];
-export const seniorityLevels = ["All Levels", "C-Level", "VP", "Director", "Manager", "Individual Contributor"];
+export const companySizes = ["All Sizes", "1-10", "10-50", "50-200", "200-500", "500-1000", "1000-5000", "5000-10000", "10000+"];
+export const seniorityLevels = ["All Levels", "C-Level", "VP", "Director", "Manager", "Senior", "Individual Contributor", "Intern"];
 
 export const europeanDomains = [
-  { country: "Bulgaria", domains: ["abv.bg"] },
-  { country: "Germany", domains: ["gmx.de", "web.de"] },
-  { country: "France", domains: ["orange.fr", "wanadoo.fr", "free.fr"] },
-  { country: "Italy", domains: ["libero.it", "virgilio.it"] },
-  { country: "Spain", domains: ["terra.es", "ya.com"] },
-  { country: "Netherlands", domains: ["planet.nl", "kpnmail.nl"] },
-  { country: "Poland", domains: ["wp.pl", "o2.pl", "interia.pl"] },
-  { country: "Russia", domains: ["mail.ru", "yandex.ru"] },
-  { country: "Sweden", domains: ["telia.com"] },
-  { country: "Austria", domains: ["gmx.at", "aon.at"] },
-  { country: "Czech Republic", domains: ["seznam.cz", "centrum.cz"] },
-  { country: "Romania", domains: ["yahoo.ro"] },
+  // Western Europe
+  { country: "Germany", domains: ["gmx.de", "web.de", "t-online.de", "freenet.de"] },
+  { country: "France", domains: ["orange.fr", "wanadoo.fr", "free.fr", "sfr.fr", "laposte.net"] },
+  { country: "United Kingdom", domains: ["btinternet.com", "sky.com", "virginmedia.com", "talktalk.net"] },
+  { country: "Italy", domains: ["libero.it", "virgilio.it", "tiscali.it", "alice.it", "tin.it"] },
+  { country: "Spain", domains: ["terra.es", "ya.com", "telefonica.net", "movistar.es"] },
+  { country: "Netherlands", domains: ["planet.nl", "kpnmail.nl", "ziggo.nl", "xs4all.nl"] },
+  { country: "Belgium", domains: ["skynet.be", "telenet.be", "proximus.be"] },
+  { country: "Switzerland", domains: ["bluewin.ch", "sunrise.ch", "gmx.ch"] },
+  { country: "Austria", domains: ["gmx.at", "aon.at", "a1.net", "chello.at"] },
+  { country: "Luxembourg", domains: ["pt.lu", "vo.lu"] },
+  // Northern Europe
+  { country: "Sweden", domains: ["telia.com", "comhem.se", "bredbandsbolaget.se"] },
+  { country: "Denmark", domains: ["tdcadsl.dk", "jubii.dk", "stofanet.dk"] },
+  { country: "Norway", domains: ["online.no", "broadpark.no", "telenor.com"] },
+  { country: "Finland", domains: ["kolumbus.fi", "welho.com", "elisanet.fi"] },
+  { country: "Iceland", domains: ["simnet.is", "internet.is"] },
+  // Eastern Europe
+  { country: "Poland", domains: ["wp.pl", "o2.pl", "interia.pl", "onet.pl", "poczta.fm"] },
+  { country: "Czech Republic", domains: ["seznam.cz", "centrum.cz", "volny.cz", "atlas.cz"] },
+  { country: "Romania", domains: ["yahoo.ro", "rdslink.ro", "clicknet.ro"] },
+  { country: "Hungary", domains: ["freemail.hu", "citromail.hu", "t-online.hu"] },
+  { country: "Bulgaria", domains: ["abv.bg", "mail.bg", "gbg.bg", "dir.bg"] },
+  { country: "Slovakia", domains: ["centrum.sk", "azet.sk", "post.sk"] },
+  { country: "Slovenia", domains: ["siol.net", "volja.net", "t-2.net"] },
+  { country: "Croatia", domains: ["net.hr", "optinet.hr", "iskon.hr"] },
+  { country: "Serbia", domains: ["eunet.rs", "sbb.rs", "open.telekom.rs"] },
+  { country: "Ukraine", domains: ["ukr.net", "meta.ua", "i.ua", "bigmir.net"] },
+  { country: "Russia", domains: ["mail.ru", "yandex.ru", "rambler.ru", "list.ru"] },
+  { country: "Lithuania", domains: ["takas.lt", "delfi.lt", "inbox.lt"] },
+  { country: "Latvia", domains: ["inbox.lv", "one.lv", "apollo.lv"] },
+  { country: "Estonia", domains: ["hot.ee", "mail.ee", "neti.ee"] },
+  { country: "Belarus", domains: ["tut.by", "mail.by"] },
+  { country: "Moldova", domains: ["mail.md", "starnet.md"] },
+  // Southern Europe
+  { country: "Portugal", domains: ["sapo.pt", "clix.pt", "iol.pt", "netcabo.pt"] },
+  { country: "Greece", domains: ["otenet.gr", "forthnet.gr", "in.gr", "hol.gr"] },
+  { country: "Turkey", domains: ["mynet.com", "superonline.com", "ttnet.net.tr", "turk.net"] },
+  { country: "Cyprus", domains: ["cytanet.com.cy", "logos.cy.net"] },
+  { country: "Malta", domains: ["onvol.net", "maltanet.net"] },
 ];
