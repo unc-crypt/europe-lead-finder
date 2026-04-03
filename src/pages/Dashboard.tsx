@@ -55,7 +55,7 @@ const Dashboard = () => {
           <div>
             <h1 className="font-display text-2xl font-bold">Search Leads</h1>
             <p className="text-sm text-muted-foreground mt-1">
-              {total > 0 ? `${total.toLocaleString()} contacts found` : "Search across 250M+ contacts worldwide"}
+              {total > 0 ? `${total.toLocaleString()} contacts found` : "Search across 1B+ verified European contacts"}
             </p>
           </div>
           <Button variant="outline" className="gap-2">
