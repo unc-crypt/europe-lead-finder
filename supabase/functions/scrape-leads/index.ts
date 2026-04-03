@@ -70,32 +70,14 @@ function buildSearchQueries(
   } else {
     const countryStr = country && country !== "All Countries" ? ` ${country}` : "";
     const industryStr = industry && industry !== "All Industries" ? ` ${industry}` : "";
-    const seniorityStr = seniority && seniority !== "All Levels" ? ` ${seniority}` : "";
 
-    // Core searches
+    // Keep to max 6 queries for speed
     queries.push(`"${query}"${countryStr}${industryStr} email contact`);
     queries.push(`"${query}"${countryStr} site:linkedin.com/in`);
     queries.push(`"${query}"${countryStr}${industryStr} directory email list`);
-    queries.push(`"${query}"${countryStr} professional association members email`);
-    queries.push(`"${query}"${countryStr} "@" email phone${industryStr}`);
-    queries.push(`"${query}"${countryStr} staff team email${seniorityStr}`);
-    queries.push(`"${query}"${countryStr} chamber of commerce`);
-    queries.push(`"${query}" email list${countryStr}${industryStr} 2024 2025`);
-
-    // Country-specific hints
-    if (country && country !== "All Countries") {
-      const hints = COUNTRY_SEARCH_HINTS[country];
-      if (hints) {
-        for (const hint of hints) {
-          queries.push(`"${query}" ${hint} email`);
-        }
-      }
-    }
-
-    // Directory-specific searches
-    queries.push(`"${query}"${countryStr} site:europages.com`);
-    queries.push(`"${query}"${countryStr} site:kompass.com`);
-    queries.push(`"${query}"${countryStr} site:xing.com`);
+    queries.push(`"${query}"${countryStr} "@" email phone`);
+    queries.push(`"${query}"${countryStr} professional association email`);
+    queries.push(`"${query}" email list${countryStr} 2024 2025`);
   }
 
   return queries;
