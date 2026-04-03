@@ -112,27 +112,23 @@ async function extractLeadsWithAI(
     return [];
   }
 
-  // Process in batches to extract more leads
-  const BATCH_SIZE = 5;
+  // Process all at once for speed
   const allLeads: ExtractedLead[] = [];
-  
-  for (let i = 0; i < searchResults.length; i += BATCH_SIZE) {
-    const batch = searchResults.slice(i, i + BATCH_SIZE);
-    const content = batch
-      .map((r: any) => {
-        const parts = [];
-        if (r.title) parts.push(`Title: ${r.title}`);
-        if (r.description) parts.push(`Description: ${r.description}`);
-        if (r.url) parts.push(`URL: ${r.url}`);
-        if (r.markdown) parts.push(`Content: ${r.markdown.substring(0, 3000)}`);
-        return parts.join("\n");
-      })
-      .join("\n---\n")
-      .substring(0, 25000);
+  const content = searchResults
+    .map((r: any) => {
+      const parts = [];
+      if (r.title) parts.push(`Title: ${r.title}`);
+      if (r.description) parts.push(`Desc: ${r.description}`);
+      if (r.url) parts.push(`URL: ${r.url}`);
+      if (r.markdown) parts.push(`Content: ${r.markdown.substring(0, 1500)}`);
+      return parts.join("\n");
+    })
+    .join("\n---\n")
+    .substring(0, 20000);
 
-    if (!content.trim()) continue;
+  if (!content.trim()) return [];
 
-    try {
+  {
       const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
         method: "POST",
         headers: {
