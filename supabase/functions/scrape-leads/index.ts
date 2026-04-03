@@ -216,8 +216,6 @@ async function extractLeadsWithAI(
     console.error("AI extraction error:", e);
     return [];
   }
-
-  return allLeads;
 }
 
 function inferSeniority(title: string): string {
