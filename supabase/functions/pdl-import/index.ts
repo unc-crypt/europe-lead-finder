@@ -98,6 +98,13 @@ Deno.serve(async (req) => {
 
       if (!response.ok) {
         const errText = await response.text();
+        // 404 means no results found - not an error
+        if (response.status === 404) {
+          return new Response(
+            JSON.stringify({ success: true, leads_found: 0, total_from_pdl: 0, scroll_token: null, has_more: false }),
+            { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          );
+        }
         throw new Error(`PDL API error [${response.status}]: ${errText}`);
       }
 
