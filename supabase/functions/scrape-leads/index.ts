@@ -186,36 +186,35 @@ async function extractLeadsWithAI(
       });
 
       if (!response.ok) {
-        console.error("AI error:", response.status);
-        continue;
-      }
-
-      const aiData = await response.json();
-      const toolCall = aiData.choices?.[0]?.message?.tool_calls?.[0];
-      if (!toolCall) continue;
-
-      const parsed = JSON.parse(toolCall.function.arguments);
-      const leads = (parsed.leads || []).map((l: any) => ({
-        first_name: l.first_name || "Unknown",
-        last_name: l.last_name || "Unknown",
-        title: l.title || "Professional",
-        company: l.company || "Unknown",
-        email: l.email || "",
-        phone: l.phone || "",
-        country: l.country || targetCountry || "Unknown",
-        domain: l.domain || (l.email ? l.email.split("@")[1] : ""),
-        industry: l.industry || targetIndustry || "General",
-        company_size: "Unknown",
-        seniority: inferSeniority(l.title || ""),
-        verified: l.email ? "likely" : "unverified",
-        confidence: l.email ? 65 : 30,
-        linkedin_url: l.linkedin_url || "",
-      }));
-
-      allLeads.push(...leads);
-    } catch (e) {
-      console.error("AI batch error:", e);
+      return [];
     }
+
+    const aiData = await response.json();
+    const toolCall = aiData.choices?.[0]?.message?.tool_calls?.[0];
+    if (!toolCall) return [];
+
+    const parsed = JSON.parse(toolCall.function.arguments);
+    const leads = (parsed.leads || []).map((l: any) => ({
+      first_name: l.first_name || "Unknown",
+      last_name: l.last_name || "Unknown",
+      title: l.title || "Professional",
+      company: l.company || "Unknown",
+      email: l.email || "",
+      phone: l.phone || "",
+      country: l.country || targetCountry || "Unknown",
+      domain: l.domain || (l.email ? l.email.split("@")[1] : ""),
+      industry: l.industry || targetIndustry || "General",
+      company_size: "Unknown",
+      seniority: inferSeniority(l.title || ""),
+      verified: l.email ? "likely" : "unverified",
+      confidence: l.email ? 65 : 30,
+      linkedin_url: l.linkedin_url || "",
+    }));
+
+    return leads;
+  } catch (e) {
+    console.error("AI extraction error:", e);
+    return [];
   }
 
   return allLeads;
