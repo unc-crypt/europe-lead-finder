@@ -5,3 +5,6 @@ verify_jwt = false
 
 [functions.scrape-leads]
 verify_jwt = false
+
+[functions.bulk-scrape]
+verify_jwt = false
