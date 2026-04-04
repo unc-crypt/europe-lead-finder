@@ -11,3 +11,9 @@ verify_jwt = false
 
 [functions.pdl-import]
 verify_jwt = false
+
+[functions.discover-emails]
+verify_jwt = false
+
+[functions.scrape-directories]
+verify_jwt = false
