@@ -3,6 +3,10 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import Navbar from "@/components/Navbar";
 import { Search, ArrowRight, CheckCircle2 } from "lucide-react";
+import heroNetworkImg from "@/assets/hero-network.jpg";
+import europeCoverageImg from "@/assets/europe-coverage.jpg";
+import emailDiscoveryImg from "@/assets/email-discovery.jpg";
+import salesTeamImg from "@/assets/sales-team.jpg";
 
 // ── Data ──────────────────────────────────────────────────────────────────────
 
