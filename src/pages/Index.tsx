@@ -3,10 +3,10 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import Navbar from "@/components/Navbar";
 import { Search, ArrowRight, CheckCircle2 } from "lucide-react";
-import heroNetworkImg from "@/assets/hero-network.jpg";
-import europeCoverageImg from "@/assets/europe-coverage.jpg";
-import emailDiscoveryImg from "@/assets/email-discovery.jpg";
-import salesTeamImg from "@/assets/sales-team.jpg";
+import dashboardPreviewImg from "@/assets/dashboard-preview.jpg";
+import europeMapImg from "@/assets/europe-map.jpg";
+import teamSuccessImg from "@/assets/team-success.jpg";
+import emailPipelineImg from "@/assets/email-pipeline.jpg";
 
 // ── Data ──────────────────────────────────────────────────────────────────────
 
@@ -87,14 +87,6 @@ const testimonials = [
   { initials: "DI", name: "Dimitar Ivanov", role: "Founder — Sofia Labs", text: '"abv.bg, mail.bg, dir.bg — these Bulgarian domains exist in LeadPulse and nowhere else. For any business selling into Eastern Europe this is the only platform that actually helps."', domains: "abv.bg · mail.bg · gbg.bg · dir.bg" },
 ];
 
-const heroRows = [
-  { email: "j.smith@btinternet.com", name: "James Smith · Smith Plumbing", domain: "btinternet.com", status: "verified" },
-  { email: "emma@clarkesolicitors.co.uk", name: "Emma Clarke · Clarke LLP", domain: ".co.uk", status: "verified" },
-  { email: "info@brighton-dental.co.uk", name: "Brighton Dental Practice", domain: ".co.uk", status: "verified" },
-  { email: "stefan.w@gmx.de", name: "Stefan Weber · Weber GmbH", domain: "gmx.de", status: "verified" },
-  { email: "claire@orange.fr", name: "Claire Martin · Innovatech", domain: "orange.fr", status: "pending" },
-];
-
 const coverageItems = [
   { flag: "🇬🇧", title: "United Kingdom — Live now", desc: "94,903 leads from Yell, Companies House, FreeIndex, Checkatrade, NHS registers, Ofsted, Law Society, Bark, TrustATrader and 8 more. Growing every 2 minutes." },
   { flag: "🇩🇪🇫🇷🇮🇹", title: "Western Europe — Building now", desc: "Germany, France, Italy, Spain, Netherlands, Belgium, Switzerland, Austria. Targeting gmx.de, orange.fr, libero.it, terra.es and 40+ country-specific domains." },
@@ -137,7 +129,6 @@ const Index = () => {
 
       {/* ── HERO ── */}
       <section className="relative overflow-hidden py-16 lg:py-20 border-b border-border" style={{ background: "linear-gradient(175deg, hsl(var(--primary)/0.06) 0%, hsl(var(--background)) 55%, hsl(var(--muted)/0.3) 100%)" }}>
-        <img src={heroNetworkImg} alt="" className="absolute inset-0 w-full h-full object-cover opacity-[0.04] z-0" />
         <div className="absolute inset-0 z-0" style={{
           backgroundImage: "linear-gradient(hsl(var(--primary)/0.04) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--primary)/0.04) 1px, transparent 1px)",
           backgroundSize: "48px 48px",
@@ -174,8 +165,11 @@ const Index = () => {
               </div>
             </div>
 
-            {/* Right — Dashboard visual */}
+            {/* Right — Featured dashboard image */}
             <div className="relative hidden lg:block">
+              <div className="rounded-2xl overflow-hidden shadow-2xl border border-border/50 ring-1 ring-primary/10">
+                <img src={dashboardPreviewImg} alt="LeadPulse dashboard showing UK business lead data with search filters and analytics" className="w-full h-auto" width={1280} height={800} />
+              </div>
               {/* Floating top badge */}
               <div className="absolute -top-5 -right-4 z-20 bg-card border border-border rounded-2xl px-4 py-3 shadow-xl flex items-center gap-3 animate-bounce-slow">
                 <div className="w-10 h-10 rounded-lg bg-emerald-100 flex items-center justify-center text-lg">📈</div>
@@ -184,55 +178,6 @@ const Index = () => {
                   <div className="text-[11px] text-muted-foreground font-mono">leads added today</div>
                 </div>
               </div>
-
-              {/* Main dashboard card */}
-              <div className="bg-card border border-border rounded-3xl shadow-2xl overflow-hidden">
-                <div className="bg-muted border-b border-border px-4 py-3 flex items-center gap-3">
-                  <div className="flex gap-1.5">
-                    <div className="w-2.5 h-2.5 rounded-full bg-red-400" />
-                    <div className="w-2.5 h-2.5 rounded-full bg-yellow-400" />
-                    <div className="w-2.5 h-2.5 rounded-full bg-green-400" />
-                  </div>
-                  <div className="flex-1 bg-card border border-border rounded-md px-3 py-1 font-mono text-[11px] text-muted-foreground">app.leadpulse.com/search</div>
-                </div>
-                <div className="p-4">
-                  {/* Search */}
-                  <div className="flex items-center gap-2.5 bg-muted border border-border rounded-lg px-3.5 py-2.5 mb-3">
-                    <Search className="h-3.5 w-3.5 text-muted-foreground" />
-                    <span className="flex-1 text-[13px] text-muted-foreground">solicitors @ btinternet.com, builders @ sky.com...</span>
-                    <span className="bg-primary text-primary-foreground text-[11px] font-mono font-semibold px-3 py-1 rounded-md">Search</span>
-                  </div>
-                  {/* Filters */}
-                  <div className="flex gap-1.5 mb-3 flex-wrap">
-                    {["🇬🇧 UK", "Industry", "Domain", "✓ Verified", "📞 Has phone"].map((f, i) => (
-                      <span key={f} className={`text-[11px] font-mono px-2.5 py-1 rounded-md border cursor-pointer transition-colors ${i === 0 ? "bg-primary/10 border-primary/30 text-primary" : "bg-muted border-border text-muted-foreground hover:border-primary/30 hover:text-foreground"}`}>{f}</span>
-                    ))}
-                  </div>
-                  {/* Table header */}
-                  <div className="grid grid-cols-[2.2fr_1.4fr_0.9fr_80px] px-2.5 py-1.5 bg-muted rounded-lg mb-1 text-[10px] font-mono text-muted-foreground uppercase tracking-wider">
-                    <div>Email</div><div>Name / Company</div><div>Domain</div><div>Status</div>
-                  </div>
-                  {/* Table rows */}
-                  {heroRows.map((r) => (
-                    <div key={r.email} className="grid grid-cols-[2.2fr_1.4fr_0.9fr_80px] px-2.5 py-2.5 border-b border-border items-center hover:bg-muted/50 rounded-md cursor-pointer transition-colors">
-                      <div className="text-xs font-mono font-medium text-primary truncate">{r.email}</div>
-                      <div className="text-xs font-bold truncate">{r.name}</div>
-                      <div className="text-xs text-muted-foreground font-mono">{r.domain}</div>
-                      <div>
-                        <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-mono font-semibold border ${r.status === "verified" ? "bg-emerald-50 text-emerald-800 border-emerald-200" : "bg-amber-50 text-amber-800 border-amber-200"}`}>
-                          <span className="w-1 h-1 rounded-full bg-current" />
-                          {r.status}
-                        </span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                <div className="px-4 py-3 bg-muted border-t border-border flex items-center justify-between">
-                  <div className="font-mono text-[11px] text-muted-foreground">Showing 5 of <strong className="text-emerald-600">{formatted}</strong> results</div>
-                  <button className="bg-primary text-primary-foreground text-[11px] font-mono font-semibold px-3.5 py-1.5 rounded-md">Export CSV</button>
-                </div>
-              </div>
-
               {/* Floating bottom badge */}
               <div className="absolute -bottom-4 -left-4 z-20 bg-card border border-border rounded-2xl px-4 py-3 shadow-xl flex items-center gap-3 animate-bounce-slow" style={{ animationDelay: "1s" }}>
                 <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-lg">🌍</div>
@@ -265,9 +210,8 @@ const Index = () => {
         </div>
       </div>
 
-      {/* ── COVERAGE + DOMAINS ── */}
+      {/* ── COVERAGE + MAP ── */}
       <section id="coverage" className="py-20 relative overflow-hidden">
-        <img src={europeCoverageImg} alt="" className="absolute top-0 right-0 w-1/2 h-full object-cover opacity-[0.06] z-0" loading="lazy" width={1280} height={800} />
         <div className="container">
           <div className="mb-12">
             <div className="flex items-center gap-2 text-[11px] text-primary font-mono uppercase tracking-widest mb-3">
@@ -276,6 +220,12 @@ const Index = () => {
             <h2 className="text-3xl md:text-4xl font-extrabold mb-3">UK-first. Then all of Europe.</h2>
             <p className="text-base text-muted-foreground max-w-lg">We started with the UK because sources are most structured. Europe expands country by country from here.</p>
           </div>
+
+          {/* Featured Europe map */}
+          <div className="mb-14 rounded-2xl overflow-hidden border border-border shadow-lg">
+            <img src={europeMapImg} alt="B2B lead network coverage across Europe and United Kingdom" className="w-full h-auto max-h-[420px] object-cover" loading="lazy" width={1280} height={720} />
+          </div>
+
           <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.6fr] gap-14 items-start">
             {/* Coverage items */}
             <div className="flex flex-col gap-3">
@@ -317,14 +267,22 @@ const Index = () => {
 
       {/* ── EMAIL LISTS ── */}
       <section id="lists" className="bg-muted py-20 border-y border-border relative overflow-hidden">
-        <img src={emailDiscoveryImg} alt="" className="absolute bottom-0 left-0 w-96 opacity-[0.05] z-0" loading="lazy" width={800} height={600} />
         <div className="container">
-          <div className="text-center max-w-lg mx-auto mb-12">
-            <div className="flex items-center gap-2 text-[11px] text-primary font-mono uppercase tracking-widest mb-3 justify-center">
-              <span className="w-5 h-0.5 bg-primary rounded" /> Email lists
+          <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.2fr] gap-12 items-center mb-12">
+            <div>
+              <div className="flex items-center gap-2 text-[11px] text-primary font-mono uppercase tracking-widest mb-3">
+                <span className="w-5 h-0.5 bg-primary rounded" /> Email lists
+              </div>
+              <h2 className="text-3xl md:text-4xl font-extrabold mb-3">Every UK industry. Every region.</h2>
+              <p className="text-base text-muted-foreground mb-6">Pre-built lists ready to download, or filter and build your own list in seconds.</p>
+              <Button className="gap-2" asChild>
+                <Link to="/signup">Browse All Lists <ArrowRight className="h-4 w-4" /></Link>
+              </Button>
             </div>
-            <h2 className="text-3xl md:text-4xl font-extrabold mb-3">Every UK industry. Every region.</h2>
-            <p className="text-base text-muted-foreground">Pre-built lists ready to download, or filter and build your own list in seconds.</p>
+            {/* Featured email pipeline image */}
+            <div className="rounded-2xl overflow-hidden border border-border shadow-lg bg-card">
+              <img src={emailPipelineImg} alt="Email discovery and verification pipeline" className="w-full h-auto" loading="lazy" width={800} height={600} />
+            </div>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-px bg-border border border-border rounded-2xl overflow-hidden">
             {emailLists.map((l) => (
@@ -431,18 +389,41 @@ const Index = () => {
         </div>
       </section>
 
-      {/* ── TESTIMONIALS ── */}
+      {/* ── TESTIMONIALS with team image ── */}
       <section className="bg-muted py-20 border-t border-border relative overflow-hidden">
-        <img src={salesTeamImg} alt="" className="absolute top-0 right-0 w-1/3 h-full object-cover opacity-[0.04] z-0" loading="lazy" width={1200} height={800} />
         <div className="container relative z-10">
-          <div className="text-center max-w-md mx-auto mb-12">
-            <div className="flex items-center gap-2 text-[11px] text-primary font-mono uppercase tracking-widest mb-3 justify-center">
-              <span className="w-5 h-0.5 bg-primary rounded" /> What people say
+          <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.4fr] gap-12 items-start mb-12">
+            <div>
+              <div className="flex items-center gap-2 text-[11px] text-primary font-mono uppercase tracking-widest mb-3">
+                <span className="w-5 h-0.5 bg-primary rounded" /> What people say
+              </div>
+              <h2 className="text-3xl md:text-4xl font-extrabold mb-4">Sales teams that switched from Cognism</h2>
+              <p className="text-base text-muted-foreground mb-6">Join thousands of B2B sales professionals who've already made the switch.</p>
+              {/* Featured team image */}
+              <div className="rounded-2xl overflow-hidden border border-border shadow-lg">
+                <img src={teamSuccessImg} alt="Sales team celebrating successful lead generation results" className="w-full h-auto" loading="lazy" width={1280} height={720} />
+              </div>
             </div>
-            <h2 className="text-3xl md:text-4xl font-extrabold">Sales teams that switched from Cognism</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {testimonials.slice(0, 4).map((t) => (
+                <div key={t.name} className="bg-card border border-border rounded-2xl p-6 hover:shadow-lg transition-all">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-11 h-11 rounded-full bg-gradient-to-br from-primary to-emerald-500 flex items-center justify-center text-sm font-extrabold text-white shrink-0">{t.initials}</div>
+                    <div>
+                      <div className="font-bold text-sm">{t.name}</div>
+                      <div className="text-xs text-muted-foreground font-mono">{t.role}</div>
+                    </div>
+                  </div>
+                  <div className="text-primary text-sm tracking-widest mb-3">★★★★★</div>
+                  <div className="text-sm text-muted-foreground leading-relaxed">{t.text}</div>
+                  <div className="mt-3.5 pt-3.5 border-t border-border font-mono text-[11px] text-emerald-600 font-semibold">{t.domains}</div>
+                </div>
+              ))}
+            </div>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {testimonials.map((t) => (
+          {/* Remaining testimonials */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {testimonials.slice(4).map((t) => (
               <div key={t.name} className="bg-card border border-border rounded-2xl p-6 hover:shadow-lg transition-all">
                 <div className="flex items-center gap-3 mb-4">
                   <div className="w-11 h-11 rounded-full bg-gradient-to-br from-primary to-emerald-500 flex items-center justify-center text-sm font-extrabold text-white shrink-0">{t.initials}</div>
