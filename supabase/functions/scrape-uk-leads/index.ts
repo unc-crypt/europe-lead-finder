@@ -13,74 +13,42 @@ const UK_INDUSTRIES = [
   "recruitment-agencies", "marketing-agencies", "it-services",
   "management-consultants", "hr-consultants", "pr-agencies",
   "dentists", "opticians", "physiotherapists", "chiropractors",
-  "care-homes", "nursing-homes", "pharmacies", "private-hospitals",
-  "cosmetic-surgeons", "psychologists", "nutritionists",
+  "care-homes", "pharmacies", "private-hospitals",
   "builders", "plumbers", "electricians", "roofers", "decorators",
-  "landscapers", "joiners", "plasterers", "heating-engineers",
-  "kitchen-fitters", "bathroom-fitters", "glaziers", "locksmiths",
-  "restaurants", "hotels", "pubs", "cafes", "catering-companies",
-  "wedding-venues", "event-planners", "florists", "bakeries",
-  "nurseries", "tutors", "driving-schools", "language-schools",
-  "charities", "community-organisations",
-  "car-dealers", "garages", "mot-centres", "couriers",
-  "removal-companies", "van-hire", "taxi-companies",
+  "landscapers", "heating-engineers",
+  "restaurants", "hotels", "catering-companies",
+  "wedding-venues", "event-planners", "florists",
+  "nurseries", "driving-schools", "language-schools",
+  "car-dealers", "garages", "couriers",
   "estate-agents", "letting-agents", "gyms", "beauty-salons",
-  "hairdressers", "photographers", "printers", "security-companies",
-  "cleaning-companies", "pest-control", "skip-hire",
+  "hairdressers", "photographers", "security-companies",
+  "cleaning-companies", "pest-control",
 ];
 
 // ── UK Regions ────────────────────────────────────────────────────────────────
 const UK_REGIONS = [
-  "london", "central-london", "east-london", "north-london",
-  "south-london", "west-london", "croydon", "bromley", "enfield",
-  "barnet", "harrow", "ealing", "richmond", "kingston",
-  "birmingham", "coventry", "wolverhampton", "reading", "oxford",
-  "milton-keynes", "slough", "guildford", "brighton", "portsmouth",
-  "southampton", "basingstoke", "maidstone", "canterbury",
-  "manchester", "salford", "stockport", "bolton", "wigan",
-  "liverpool", "wirral", "warrington", "chester", "blackpool",
-  "preston", "leeds", "bradford", "sheffield", "hull", "york",
-  "wakefield", "huddersfield", "doncaster", "nottingham", "derby",
-  "leicester", "lincoln", "northampton", "peterborough",
-  "stoke-on-trent", "shrewsbury", "worcester",
-  "norwich", "ipswich", "colchester", "chelmsford", "cambridge",
-  "luton", "watford", "bristol", "bath", "exeter", "plymouth",
-  "gloucester", "swindon", "bournemouth", "newcastle", "sunderland",
-  "middlesbrough", "durham", "glasgow", "edinburgh", "aberdeen",
-  "dundee", "inverness", "cardiff", "swansea", "newport",
-  "belfast", "londonderry", "lisburn",
+  "London", "Birmingham", "Manchester", "Leeds", "Sheffield",
+  "Liverpool", "Bristol", "Newcastle", "Nottingham", "Leicester",
+  "Brighton", "Portsmouth", "Southampton", "Oxford", "Cambridge",
+  "Reading", "Edinburgh", "Glasgow", "Cardiff", "Belfast",
+  "Aberdeen", "Dundee", "Swansea", "Plymouth", "Exeter",
+  "Norwich", "Ipswich", "York", "Hull", "Derby",
+  "Coventry", "Wolverhampton", "Stoke-on-Trent", "Sunderland",
+  "Bath", "Chester", "Canterbury", "Bournemouth", "Milton Keynes",
 ];
 
-// ── Source URL patterns ───────────────────────────────────────────────────────
-interface SourceDef {
-  name: string;
-  pattern: string;
-  category: string;
-}
-
-const SOURCES: SourceDef[] = [
-  // Directories
-  { name: "Yell", pattern: "https://www.yell.com/s/{industry}/{region}/", category: "directory" },
-  { name: "Thomson Local", pattern: "https://www.thomsonlocal.com/search/{industry}/{region}", category: "directory" },
-  { name: "FreeIndex", pattern: "https://www.freeindex.co.uk/search/?q={industry}&l={region}", category: "directory" },
-  { name: "Scoot", pattern: "https://www.scoot.co.uk/find/{industry}/{region}", category: "directory" },
-  { name: "Cylex UK", pattern: "https://www.cylex.co.uk/{industry}/{region}.html", category: "directory" },
-  { name: "Hotfrog UK", pattern: "https://www.hotfrog.co.uk/search/uk/{region}/{industry}", category: "directory" },
-  { name: "Brownbook", pattern: "https://www.brownbook.net/businesses/{industry}/{region}", category: "directory" },
-  // Trade platforms
-  { name: "Checkatrade", pattern: "https://www.checkatrade.com/search?q={industry}&location={region}", category: "trade" },
-  { name: "TrustATrader", pattern: "https://www.trustatrader.com/traders/{industry}/{region}", category: "trade" },
-  { name: "Bark.com", pattern: "https://www.bark.com/en/gb/company/{industry}/{region}/", category: "trade" },
-  { name: "Houzz UK", pattern: "https://www.houzz.co.uk/professionals/{industry}/{region}", category: "trade" },
-  // Registers (region-only)
-  { name: "NHS GP", pattern: "https://www.nhs.uk/service-search/find-a-gp/results/{region}", category: "register" },
-  { name: "Ofsted", pattern: "https://reports.ofsted.gov.uk/search?q=&location={region}&radius=25", category: "register" },
-  { name: "Law Society", pattern: "https://solicitors.lawsociety.org.uk/search/results?Type=1&location={region}", category: "register" },
-  // Chambers (fixed)
-  { name: "London Chamber", pattern: "https://directory.londonchamber.co.uk/members", category: "chamber" },
-  { name: "GM Chamber", pattern: "https://www.gmchamber.co.uk/directory/", category: "chamber" },
-  { name: "Birmingham Chamber", pattern: "https://www.birmingham-chamber.com/directory/", category: "chamber" },
-  { name: "Scottish Chambers", pattern: "https://www.scottishchambers.org.uk/member-directory/", category: "chamber" },
+// ── Search query templates ────────────────────────────────────────────────────
+const SEARCH_TEMPLATES = [
+  `{industry} {region} email contact`,
+  `{industry} in {region} UK email address phone`,
+  `{industry} near {region} contact us email`,
+  `site:yell.com {industry} {region}`,
+  `site:freeindex.co.uk {industry} {region}`,
+  `site:checkatrade.com {industry} {region}`,
+  `site:thomsonlocal.com {industry} {region}`,
+  `site:bark.com {industry} {region}`,
+  `"{industry}" "{region}" "@" email -noreply`,
+  `"{industry}" "{region}" "contact" "email" site:.co.uk`,
 ];
 
 // ── Junk email filtering ──────────────────────────────────────────────────────
@@ -92,6 +60,8 @@ const JUNK_DOMAINS = new Set([
   "googletagmanager.com", "facebook.com", "twitter.com",
   "instagram.com", "linkedin.com", "tiktok.com", "youtube.com",
   "w3.org", "schema.org", "apple.com", "microsoft.com",
+  "google.com", "yell.com", "freeindex.co.uk", "checkatrade.com",
+  "thomsonlocal.com", "bark.com", "houzz.co.uk", "trustatrader.com",
 ]);
 
 const JUNK_PREFIXES = new Set([
@@ -99,8 +69,6 @@ const JUNK_PREFIXES = new Set([
   "postmaster", "mailer-daemon", "bounce", "unsubscribe",
   "admin", "webmaster", "hostmaster", "abuse",
 ]);
-
-const EMAIL_REGEX = /\b[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}\b/g;
 
 function isValidEmail(email: string): boolean {
   if (!email || !email.includes("@") || email.length < 6) return false;
@@ -112,29 +80,13 @@ function isValidEmail(email: string): boolean {
   return true;
 }
 
-// ── URL builder ───────────────────────────────────────────────────────────────
-function buildBatchUrls(cycleIndex: number, batchSize: number): { url: string; source: string; industry: string; region: string }[] {
-  const urls: { url: string; source: string; industry: string; region: string }[] = [];
-
-  // Pick a slice of industries and regions based on cycle
-  for (let i = 0; i < batchSize; i++) {
-    const idx = (cycleIndex * batchSize + i);
-    const indIdx = idx % UK_INDUSTRIES.length;
-    const regIdx = Math.floor(idx / UK_INDUSTRIES.length) % UK_REGIONS.length;
-    const srcIdx = Math.floor(idx / (UK_INDUSTRIES.length * UK_REGIONS.length)) % SOURCES.length;
-
-    const src = SOURCES[srcIdx];
-    const industry = UK_INDUSTRIES[indIdx];
-    const region = UK_REGIONS[regIdx];
-
-    let url = src.pattern;
-    if (url.includes("{industry}")) url = url.replace("{industry}", industry);
-    if (url.includes("{region}")) url = url.replace("{region}", region);
-
-    urls.push({ url, source: src.name, industry, region });
-  }
-
-  return urls;
+function inferSeniority(title: string): string {
+  const t = title.toLowerCase();
+  if (/\b(ceo|cto|cfo|coo|founder|chief|president|owner|proprietor|principal)\b/.test(t)) return "C-Level";
+  if (/\b(director|head of)\b/.test(t)) return "Director";
+  if (/\b(manager|lead|team lead|supervisor)\b/.test(t)) return "Manager";
+  if (/\b(partner|associate)\b/.test(t)) return "Senior";
+  return "Individual Contributor";
 }
 
 // ── Main handler ──────────────────────────────────────────────────────────────
@@ -156,32 +108,71 @@ Deno.serve(async (req) => {
 
     const body = await req.json().catch(() => ({}));
     const cycleIndex = body.cycle_index ?? Math.floor(Date.now() / 60000);
-    const batchSize = body.batch_size ?? 8;
+    const batchSize = body.batch_size ?? 6;
 
-    const batch = buildBatchUrls(cycleIndex, batchSize);
-    console.log(`UK scraper: processing ${batch.length} URLs from cycle ${cycleIndex}`);
+    // Pick industry/region/template combos for this cycle
+    const searches: { query: string; industry: string; region: string }[] = [];
+    for (let i = 0; i < batchSize; i++) {
+      const idx = cycleIndex * batchSize + i;
+      const indIdx = idx % UK_INDUSTRIES.length;
+      const regIdx = Math.floor(idx / UK_INDUSTRIES.length) % UK_REGIONS.length;
+      const tplIdx = Math.floor(idx / (UK_INDUSTRIES.length * UK_REGIONS.length)) % SEARCH_TEMPLATES.length;
+
+      const industry = UK_INDUSTRIES[indIdx];
+      const region = UK_REGIONS[regIdx];
+      const query = SEARCH_TEMPLATES[tplIdx]
+        .replace("{industry}", industry)
+        .replace("{region}", region);
+
+      searches.push({ query, industry, region });
+    }
+
+    console.log(`UK scraper: ${searches.length} searches, cycle ${cycleIndex}`);
 
     let totalLeads = 0;
 
     const results = await Promise.all(
-      batch.map(async ({ url, source, industry, region }) => {
+      searches.map(async ({ query, industry, region }) => {
         try {
-          // Scrape page with Firecrawl
-          const fcRes = await fetch("https://api.firecrawl.dev/v1/scrape", {
+          // Use Firecrawl SEARCH (not scrape) — works better for directories
+          const fcRes = await fetch("https://api.firecrawl.dev/v1/search", {
             method: "POST",
             headers: {
               Authorization: `Bearer ${FIRECRAWL_API_KEY}`,
               "Content-Type": "application/json",
             },
-            body: JSON.stringify({ url, formats: ["markdown"], timeout: 15000 }),
+            body: JSON.stringify({
+              query,
+              limit: 10,
+              lang: "en",
+              country: "gb",
+              scrapeOptions: { formats: ["markdown"] },
+            }),
           });
 
-          if (!fcRes.ok) return 0;
-          const fcData = await fcRes.json();
-          const content = fcData.data?.markdown || "";
-          if (!content || content.length < 50) return 0;
+          if (!fcRes.ok) {
+            console.error(`Search failed for "${query}": ${fcRes.status}`);
+            return 0;
+          }
 
-          // Use AI to extract leads from the page content
+          const fcData = await fcRes.json();
+          const searchResults = fcData.data || [];
+
+          // Combine all scraped content
+          const allContent = searchResults
+            .map((r: any) => {
+              const parts = [];
+              if (r.title) parts.push(r.title);
+              if (r.description) parts.push(r.description);
+              if (r.markdown) parts.push(r.markdown.substring(0, 3000));
+              return parts.join("\n");
+            })
+            .join("\n---\n")
+            .substring(0, 30000);
+
+          if (!allContent || allContent.length < 50) return 0;
+
+          // Use AI to extract leads
           const aiRes = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
             method: "POST",
             headers: {
@@ -193,20 +184,20 @@ Deno.serve(async (req) => {
               messages: [
                 {
                   role: "system",
-                  content: `You extract business leads from UK directory/listing pages. For each business or person found, extract:
-- email (primary target - look for mailto: links and visible emails)
-- full_name (contact person if visible)
+                  content: `You extract UK business leads from search results. For each business or person found, extract:
+- email (REQUIRED - skip entries without email)
+- full_name (contact person)
 - company (business name)
 - phone (UK format)
-- job_title (if visible)
-- address (with UK postcode if available)
+- job_title
+- address (with UK postcode if visible)
 
-IMPORTANT: Filter out junk emails (noreply, admin, support, webmaster). Only return real business/person emails.
-Source: ${source} | Industry: ${industry} | Region: ${region}`,
+CRITICAL: Only return entries where you found a REAL email address. Filter out directory platform emails.
+Industry: ${industry} | Region: ${region}`,
                 },
                 {
                   role: "user",
-                  content: `Extract ALL business leads from this ${source} page for ${industry} in ${region}:\n\n${content.substring(0, 25000)}`,
+                  content: `Extract ALL business leads with emails from these UK ${industry} search results in ${region}:\n\n${allContent}`,
                 },
               ],
               tools: [
@@ -250,7 +241,7 @@ Source: ${source} | Industry: ${industry} | Region: ${region}`,
           const parsed = JSON.parse(toolCall.function.arguments);
           const rawLeads = parsed.leads || [];
 
-          // Transform and filter
+          // Transform, filter, deduplicate
           const dbLeads: any[] = [];
           const seen = new Set<string>();
 
@@ -282,17 +273,17 @@ Source: ${source} | Industry: ${industry} | Region: ${region}`,
             });
           }
 
-          // Upsert to DB
           if (dbLeads.length > 0) {
             const { error } = await supabase
               .from("leads")
               .upsert(dbLeads, { onConflict: "email" });
-            if (error) console.error(`DB error for ${url}:`, error.message);
+            if (error) console.error(`DB error:`, error.message);
+            else console.log(`Saved ${dbLeads.length} leads for ${industry} in ${region}`);
           }
 
           return dbLeads.length;
         } catch (e) {
-          console.error(`Error scraping ${url}:`, e);
+          console.error(`Error:`, e);
           return 0;
         }
       })
@@ -304,15 +295,14 @@ Source: ${source} | Industry: ${industry} | Region: ${region}`,
       .from("leads")
       .select("*", { count: "exact", head: true });
 
-    console.log(`UK scraper done: ${totalLeads} leads from ${batch.length} URLs, ${count} total in DB`);
+    console.log(`UK scraper done: ${totalLeads} leads, ${count} total in DB`);
 
     return new Response(
       JSON.stringify({
         success: true,
         leads_found: totalLeads,
         total_in_db: count || 0,
-        urls_scraped: batch.length,
-        sources: [...new Set(batch.map((b) => b.source))],
+        searches_run: searches.length,
       }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
@@ -324,12 +314,3 @@ Source: ${source} | Industry: ${industry} | Region: ${region}`,
     );
   }
 });
-
-function inferSeniority(title: string): string {
-  const t = title.toLowerCase();
-  if (/\b(ceo|cto|cfo|coo|founder|chief|president|owner|proprietor|principal)\b/.test(t)) return "C-Level";
-  if (/\b(director|head of)\b/.test(t)) return "Director";
-  if (/\b(manager|lead|team lead|supervisor)\b/.test(t)) return "Manager";
-  if (/\b(partner|associate)\b/.test(t)) return "Senior";
-  return "Individual Contributor";
-}
