@@ -17,3 +17,6 @@ verify_jwt = false
 
 [functions.scrape-directories]
 verify_jwt = false
+
+[functions.scrape-uk-leads]
+verify_jwt = false
