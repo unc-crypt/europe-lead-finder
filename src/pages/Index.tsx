@@ -101,9 +101,7 @@ const coverageItems = [
 // ── Component ─────────────────────────────────────────────────────────────────
 
 const Index = () => {
-  const [query, setQuery] = useState("");
   const [count, setCount] = useState(94903);
-  const navigate = useNavigate();
   const tickerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -112,11 +110,6 @@ const Index = () => {
     }, 8000);
     return () => clearInterval(interval);
   }, []);
-
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    navigate(`/dashboard?q=${encodeURIComponent(query)}`);
-  };
 
   const formatted = count.toLocaleString();
 
