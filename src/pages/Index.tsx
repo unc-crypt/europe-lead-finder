@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import Navbar from "@/components/Navbar";
-import { Search, ArrowRight, CheckCircle2 } from "lucide-react";
+import { ArrowRight, CheckCircle2 } from "lucide-react";
 import dashboardPreviewImg from "@/assets/dashboard-preview.jpg";
 import europeMapImg from "@/assets/europe-map.jpg";
 import teamSuccessImg from "@/assets/team-success.jpg";
