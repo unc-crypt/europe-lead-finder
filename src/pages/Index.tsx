@@ -3,6 +3,10 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import Navbar from "@/components/Navbar";
 import { Search, ArrowRight, CheckCircle2 } from "lucide-react";
+import heroNetworkImg from "@/assets/hero-network.jpg";
+import europeCoverageImg from "@/assets/europe-coverage.jpg";
+import emailDiscoveryImg from "@/assets/email-discovery.jpg";
+import salesTeamImg from "@/assets/sales-team.jpg";
 
 // ── Data ──────────────────────────────────────────────────────────────────────
 
@@ -133,6 +137,7 @@ const Index = () => {
 
       {/* ── HERO ── */}
       <section className="relative overflow-hidden py-16 lg:py-20 border-b border-border" style={{ background: "linear-gradient(175deg, hsl(var(--primary)/0.06) 0%, hsl(var(--background)) 55%, hsl(var(--muted)/0.3) 100%)" }}>
+        <img src={heroNetworkImg} alt="" className="absolute inset-0 w-full h-full object-cover opacity-[0.04] z-0" />
         <div className="absolute inset-0 z-0" style={{
           backgroundImage: "linear-gradient(hsl(var(--primary)/0.04) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--primary)/0.04) 1px, transparent 1px)",
           backgroundSize: "48px 48px",
@@ -261,7 +266,8 @@ const Index = () => {
       </div>
 
       {/* ── COVERAGE + DOMAINS ── */}
-      <section id="coverage" className="py-20">
+      <section id="coverage" className="py-20 relative overflow-hidden">
+        <img src={europeCoverageImg} alt="" className="absolute top-0 right-0 w-1/2 h-full object-cover opacity-[0.06] z-0" loading="lazy" width={1280} height={800} />
         <div className="container">
           <div className="mb-12">
             <div className="flex items-center gap-2 text-[11px] text-primary font-mono uppercase tracking-widest mb-3">
@@ -310,7 +316,8 @@ const Index = () => {
       </section>
 
       {/* ── EMAIL LISTS ── */}
-      <section id="lists" className="bg-muted py-20 border-y border-border">
+      <section id="lists" className="bg-muted py-20 border-y border-border relative overflow-hidden">
+        <img src={emailDiscoveryImg} alt="" className="absolute bottom-0 left-0 w-96 opacity-[0.05] z-0" loading="lazy" width={800} height={600} />
         <div className="container">
           <div className="text-center max-w-lg mx-auto mb-12">
             <div className="flex items-center gap-2 text-[11px] text-primary font-mono uppercase tracking-widest mb-3 justify-center">
@@ -425,8 +432,9 @@ const Index = () => {
       </section>
 
       {/* ── TESTIMONIALS ── */}
-      <section className="bg-muted py-20 border-t border-border">
-        <div className="container">
+      <section className="bg-muted py-20 border-t border-border relative overflow-hidden">
+        <img src={salesTeamImg} alt="" className="absolute top-0 right-0 w-1/3 h-full object-cover opacity-[0.04] z-0" loading="lazy" width={1200} height={800} />
+        <div className="container relative z-10">
           <div className="text-center max-w-md mx-auto mb-12">
             <div className="flex items-center gap-2 text-[11px] text-primary font-mono uppercase tracking-widest mb-3 justify-center">
               <span className="w-5 h-0.5 bg-primary rounded" /> What people say
