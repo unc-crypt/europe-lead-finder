@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import Navbar from "@/components/Navbar";
 import { Search, ArrowRight, CheckCircle2 } from "lucide-react";
