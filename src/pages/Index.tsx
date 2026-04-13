@@ -137,6 +137,7 @@ const Index = () => {
 
       {/* ── HERO ── */}
       <section className="relative overflow-hidden py-16 lg:py-20 border-b border-border" style={{ background: "linear-gradient(175deg, hsl(var(--primary)/0.06) 0%, hsl(var(--background)) 55%, hsl(var(--muted)/0.3) 100%)" }}>
+        <img src={heroNetworkImg} alt="" className="absolute inset-0 w-full h-full object-cover opacity-[0.04] z-0" />
         <div className="absolute inset-0 z-0" style={{
           backgroundImage: "linear-gradient(hsl(var(--primary)/0.04) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--primary)/0.04) 1px, transparent 1px)",
           backgroundSize: "48px 48px",
