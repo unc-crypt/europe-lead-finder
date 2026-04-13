@@ -266,7 +266,8 @@ const Index = () => {
       </div>
 
       {/* ── COVERAGE + DOMAINS ── */}
-      <section id="coverage" className="py-20">
+      <section id="coverage" className="py-20 relative overflow-hidden">
+        <img src={europeCoverageImg} alt="" className="absolute top-0 right-0 w-1/2 h-full object-cover opacity-[0.06] z-0" loading="lazy" width={1280} height={800} />
         <div className="container">
           <div className="mb-12">
             <div className="flex items-center gap-2 text-[11px] text-primary font-mono uppercase tracking-widest mb-3">
