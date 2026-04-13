@@ -316,7 +316,8 @@ const Index = () => {
       </section>
 
       {/* ── EMAIL LISTS ── */}
-      <section id="lists" className="bg-muted py-20 border-y border-border">
+      <section id="lists" className="bg-muted py-20 border-y border-border relative overflow-hidden">
+        <img src={emailDiscoveryImg} alt="" className="absolute bottom-0 left-0 w-96 opacity-[0.05] z-0" loading="lazy" width={800} height={600} />
         <div className="container">
           <div className="text-center max-w-lg mx-auto mb-12">
             <div className="flex items-center gap-2 text-[11px] text-primary font-mono uppercase tracking-widest mb-3 justify-center">
@@ -431,8 +432,9 @@ const Index = () => {
       </section>
 
       {/* ── TESTIMONIALS ── */}
-      <section className="bg-muted py-20 border-t border-border">
-        <div className="container">
+      <section className="bg-muted py-20 border-t border-border relative overflow-hidden">
+        <img src={salesTeamImg} alt="" className="absolute top-0 right-0 w-1/3 h-full object-cover opacity-[0.04] z-0" loading="lazy" width={1200} height={800} />
+        <div className="container relative z-10">
           <div className="text-center max-w-md mx-auto mb-12">
             <div className="flex items-center gap-2 text-[11px] text-primary font-mono uppercase tracking-widest mb-3 justify-center">
               <span className="w-5 h-0.5 bg-primary rounded" /> What people say
