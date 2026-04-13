@@ -1,349 +1,512 @@
+import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
 import Navbar from "@/components/Navbar";
-import { europeanDomains, europeanCountries } from "@/lib/mock-data";
-import {
-  Search, Mail, Phone, Shield, Globe, Zap, ArrowRight, CheckCircle2, Users, Building2, TrendingUp, Star,
-  Database, Target, Lock, BarChart3, Layers, Filter, MapPin,
-} from "lucide-react";
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Search, ArrowRight, CheckCircle2 } from "lucide-react";
 
-const stats = [
-  { label: "Verified Contacts", value: "1B+", icon: Users },
-  { label: "European Leads", value: "680M+", icon: MapPin },
-  { label: "Companies", value: "150M+", icon: Building2 },
-  { label: "European Countries", value: "44", icon: Globe },
-  { label: "Email Accuracy", value: "97.5%", icon: TrendingUp },
-  { label: "Domains Tracked", value: "200+", icon: Database },
+// ── Data ──────────────────────────────────────────────────────────────────────
+
+const DOMAINS: Record<string, string[]> = {
+  "United Kingdom": ["btinternet.com", "sky.com", "virginmedia.com", "talktalk.net", "btopenworld.com", "ntlworld.com", "blueyonder.co.uk"],
+  Germany: ["gmx.de", "web.de", "t-online.de", "freenet.de", "gmx.net"],
+  France: ["orange.fr", "wanadoo.fr", "free.fr", "sfr.fr", "laposte.net"],
+  Italy: ["libero.it", "virgilio.it", "tiscali.it", "alice.it", "tin.it"],
+  Spain: ["terra.es", "ya.com", "telefonica.net", "movistar.es"],
+  Netherlands: ["planet.nl", "kpnmail.nl", "ziggo.nl", "xs4all.nl"],
+  Belgium: ["skynet.be", "telenet.be", "proximus.be"],
+  Switzerland: ["bluewin.ch", "sunrise.ch", "gmx.ch"],
+  Austria: ["gmx.at", "aon.at", "a1.net", "chello.at"],
+  Luxembourg: ["pt.lu", "vo.lu"],
+  Sweden: ["telia.com", "comhem.se", "bredbandsbolaget.se"],
+  Denmark: ["tdcadsl.dk", "jubii.dk", "stofanet.dk"],
+  Norway: ["online.no", "broadpark.no", "telenor.com"],
+  Finland: ["kolumbus.fi", "welho.com", "elisanet.fi"],
+  Iceland: ["simnet.is", "internet.is"],
+  Poland: ["wp.pl", "o2.pl", "interia.pl", "onet.pl", "poczta.fm"],
+  "Czech Republic": ["seznam.cz", "centrum.cz", "volny.cz", "atlas.cz"],
+  Romania: ["yahoo.ro", "rdslink.ro", "clicknet.ro"],
+  Hungary: ["freemail.hu", "citromail.hu", "t-online.hu"],
+  Bulgaria: ["abv.bg", "mail.bg", "gbg.bg", "dir.bg"],
+};
+
+const FLAGS: Record<string, string> = {
+  "United Kingdom": "🇬🇧", Germany: "🇩🇪", France: "🇫🇷", Italy: "🇮🇹", Spain: "🇪🇸",
+  Netherlands: "🇳🇱", Belgium: "🇧🇪", Switzerland: "🇨🇭", Austria: "🇦🇹", Luxembourg: "🇱🇺",
+  Sweden: "🇸🇪", Denmark: "🇩🇰", Norway: "🇳🇴", Finland: "🇫🇮", Iceland: "🇮🇸",
+  Poland: "🇵🇱", "Czech Republic": "🇨🇿", Romania: "🇷🇴", Hungary: "🇭🇺", Bulgaria: "🇧🇬",
+};
+
+const allDomains = Object.values(DOMAINS).flat();
+
+const emailLists = [
+  { count: "31,983", title: "Construction & Trades", desc: "Builders, plumbers, electricians, roofers, plasterers across every UK region.", tags: ["builders", "plumbers", "+8 more"] },
+  { count: "40,000+", title: "Healthcare & Medical", desc: "NHS GPs, dentists, opticians, care homes, pharmacies, physiotherapists with email.", tags: ["GPs", "dentists", "+6 more"] },
+  { count: "28,749", title: "Professional Services", desc: "Solicitors, accountants, architects, financial advisors. Decision-makers only.", tags: ["solicitors", "accountants", "+9 more"] },
+  { count: "13,123", title: "Hospitality & Food", desc: "Restaurants, hotels, pubs, cafes, catering, wedding venues across all UK cities.", tags: ["restaurants", "hotels", "+5 more"] },
+  { count: "3,877", title: "Agriculture & Farming", desc: "The only verified list of UK farm contacts with emails. Arable, livestock, poultry.", tags: ["arable", "livestock"] },
+  { count: "28,000", title: "Procurement & Buying", desc: "Purchasing managers, procurement directors and buying professionals at UK companies.", tags: ["procurement", "buying"] },
+  { count: "200k+", title: "UK Charities & NGOs", desc: "All 200,000+ Charity Commission registered organisations. Free bulk download available.", tags: ["charities", "NGOs"] },
+  { count: "Custom", title: "Build Your Own", desc: "Any industry, region, company size, or job title. Pulled from 17 UK sources live.", tags: ["any industry", "any region"] },
 ];
 
-const features = [
-  { icon: Mail, title: "Email Discovery", desc: "Find verified business emails across 200+ European domains — from gmx.de to abv.bg, libero.it to wp.pl. Pattern matching and domain-level intelligence at scale." },
-  { icon: Phone, title: "Direct Dials & Mobiles", desc: "Access direct phone numbers and mobile contacts for decision makers across all 44 European countries. Verified through multiple data sources." },
-  { icon: Shield, title: "Real-Time Verification", desc: "Every contact verified in real-time. Email deliverability checks, bounce prediction, and confidence scoring so you never waste an outreach." },
-  { icon: Globe, title: "Pan-European Coverage", desc: "The deepest European B2B database ever built. 680M+ contacts across every country from Iceland to Turkey, Portugal to Estonia." },
-  { icon: Filter, title: "Advanced Filters", desc: "Filter by country, industry, company size, seniority, domain, and more. Find exactly the leads you need in seconds." },
-  { icon: Target, title: "Intent & Enrichment", desc: "Enriched company data, technographics, and buying signals. Know who's ready to buy before you reach out." },
-  { icon: Layers, title: "Bulk Operations", desc: "Export thousands of leads at once. Build targeted lists, enrich your CRM, and power your outbound at scale." },
-  { icon: BarChart3, title: "Analytics & Insights", desc: "Track your prospecting performance. See open rates, reply rates, and conversion metrics across regions." },
+const howSteps = [
+  { num: 1, title: "Search or browse", desc: "Filter by country, industry, job title, domain or region. No demo. No sales call needed.", active: true },
+  { num: 2, title: "Preview results", desc: "See real records before spending a credit. Name, email, company and phone visible upfront.", active: false },
+  { num: 3, title: "Verify & enrich", desc: "Every email checked via DNS MX and SMTP. Bounces filtered before you download.", active: false },
+  { num: 4, title: "Export instantly", desc: "Download CSV immediately. Push to HubSpot, Pipedrive or Salesforce in one click.", active: false },
 ];
 
-const pricing = [
-  { name: "Starter", price: "Free", credits: "50 credits/mo", features: ["50 email lookups", "10 phone reveals", "Basic filters", "CSV export", "5 saved lists"], popular: false },
-  { name: "Professional", price: "$49", credits: "2,500 credits/mo", features: ["2,500 email lookups", "500 phone reveals", "Advanced filters", "Bulk export", "Unlimited lists", "CRM integration", "Priority support"], popular: true },
-  { name: "Business", price: "$149", credits: "10,000 credits/mo", features: ["10,000 email lookups", "2,000 phone reveals", "API access", "Team collaboration", "Custom enrichment", "Dedicated manager", "SLA guarantee"], popular: false },
-  { name: "Enterprise", price: "Custom", credits: "Unlimited", features: ["Unlimited lookups", "Unlimited reveals", "Full API access", "SSO & SAML", "Custom integrations", "White-label options", "24/7 support"], popular: false },
+const pricingPlans = [
+  { tier: "Starter", price: "Free", sub: "", credits: "50 credits / month", features: ["50 email lookups", "10 phone reveals", "UK leads only", "CSV export", "5 saved lists"], featured: false, cta: "Start Free" },
+  { tier: "Professional", price: "$49", sub: "/mo", credits: "2,500 credits / month", features: ["2,500 email lookups", "500 phone reveals", "UK + EU leads", "Advanced filters", "Bulk export", "CRM integration", "Priority support"], featured: true, cta: "Get Started" },
+  { tier: "Business", price: "$149", sub: "/mo", credits: "10,000 credits / month", features: ["10,000 lookups", "2,000 phone reveals", "All EU countries", "Full API access", "Team seats", "Custom enrichment", "SLA guarantee"], featured: false, cta: "Get Started" },
+  { tier: "Enterprise", price: "Custom", sub: "", credits: "Unlimited", features: ["Unlimited lookups", "Unlimited reveals", "White-label option", "SSO & SAML", "Custom integrations", "Dedicated manager", "24/7 support"], featured: false, cta: "Contact Sales" },
+];
+
+const comparisonRows = [
+  { feature: "EU contact pool", us: "680M+ target", cognism: "~millions", apollo: "~50M", ukm: "1.48M UK" },
+  { feature: "Starting price", us: "Free", cognism: "$15k+/yr", apollo: "$99/mo", ukm: "£20/1k records" },
+  { feature: "Self-serve (no demo)", us: "✓ Yes", cognism: "✗ Demo req.", apollo: "✓ Yes", ukm: "✗ Email req." },
+  { feature: "Instant download", us: "✓ Instant", cognism: "✗ Custom quote", apollo: "✓ Instant", ukm: "✗ 24–48 hrs" },
+  { feature: "200+ EU domains tracked", us: "✓ All tracked", cognism: "~30", apollo: "~20", ukm: "✗ UK only" },
+  { feature: "Eastern EU coverage", us: "210M+ target", cognism: "Limited", apollo: "~5M", ukm: "✗ N/A" },
+  { feature: "Live updates (every 2 min)", us: "✓ Yes", cognism: "Periodic", apollo: "Periodic", ukm: "Monthly" },
+  { feature: "GDPR compliant", us: "✓ Built for EU", cognism: "✓ Yes", apollo: "△ Basic", ukm: "✓ ICO reg." },
 ];
 
 const testimonials = [
-  { name: "Stefan Weber", role: "Sales Director, TechVentures GmbH — Munich", text: "LeadPulse's European coverage is unmatched. We found 50,000+ verified German contacts in our first week. Pipeline doubled in 3 months.", stars: 5 },
-  { name: "Claire Martin", role: "Head of Growth, Innovatech SAS — Paris", text: "Finally a tool that truly understands European B2B. The French and DACH market data quality is incredible. Apollo doesn't come close for EU.", stars: 5 },
-  { name: "Piotr Nowak", role: "CEO, Warsaw Solutions — Warsaw", text: "The Eastern European data blew us away. Polish, Czech, Romanian leads — all verified. Best investment for our outbound team.", stars: 5 },
-  { name: "Lucia Fernández", role: "VP Sales, Iberia Digital — Madrid", text: "We switched from Apollo to LeadPulse for European prospecting. 3x more Spanish leads, better accuracy, and half the price.", stars: 5 },
-  { name: "Henrik Johansson", role: "Revenue Lead, Nordic SaaS AB — Stockholm", text: "Incredible Nordic coverage. Swedish, Danish, Norwegian contacts that no other platform has. A game-changer for Scandinavian sales.", stars: 5 },
-  { name: "Dimitar Ivanov", role: "Founder, Sofia Labs — Sofia", text: "As a Bulgarian startup, finding local B2B contacts was impossible until LeadPulse. abv.bg, mail.bg — they cover it all.", stars: 5 },
+  { initials: "SW", name: "Stefan Weber", role: "Sales Director — TechVentures GmbH", text: '"We were paying Cognism £18k a year for German leads. Switched to LeadPulse and got 50,000 gmx.de and web.de contacts in week one. Pipeline doubled in 3 months."', domains: "gmx.de · web.de · t-online.de · freenet.de" },
+  { initials: "EC", name: "Emma Clarke", role: "Head of Growth — Clarke Solicitors LLP", text: '"Used UK Marketing Management for years — waited 48 hours for every CSV. LeadPulse is live, self-serve, costs a fraction. Downloaded 2,000 verified UK solicitor emails in 10 minutes."', domains: "btinternet.com · sky.com · virginmedia.com" },
+  { initials: "PN", name: "Piotr Nowak", role: "CEO — Warsaw Solutions", text: '"The Eastern European data is unmatched. wp.pl, onet.pl, poczta.fm — Apollo doesn\'t even try. We\'re building pipeline in Poland and Czech Republic that no competitor can touch."', domains: "wp.pl · onet.pl · interia.pl · poczta.fm" },
+  { initials: "LF", name: "Lucia Fernández", role: "VP Sales — Iberia Digital", text: '"3x more Spanish leads than Apollo. terra.es, movistar.es, telefonica.net — all verified and downloadable instantly. Half the price. No contract. No \'book a demo\' nonsense."', domains: "terra.es · movistar.es · telefonica.net · ya.com" },
+  { initials: "HJ", name: "Henrik Johansson", role: "Revenue Lead — Nordic SaaS AB", text: '"Nobody covers the Nordics properly. telia.com, comhem.se, online.no — LeadPulse tracks them all. Prospecting in Sweden and Norway with data no one else can supply."', domains: "telia.com · comhem.se · online.no · tdcadsl.dk" },
+  { initials: "DI", name: "Dimitar Ivanov", role: "Founder — Sofia Labs", text: '"abv.bg, mail.bg, dir.bg — these Bulgarian domains exist in LeadPulse and nowhere else. For any business selling into Eastern Europe this is the only platform that actually helps."', domains: "abv.bg · mail.bg · gbg.bg · dir.bg" },
 ];
 
-const europeanCoverageStats = [
-  { region: "Western Europe", leads: "280M+", countries: "Germany, France, UK, Italy, Spain, Netherlands, Belgium, Switzerland, Austria" },
-  { region: "Northern Europe", leads: "85M+", countries: "Sweden, Denmark, Norway, Finland, Iceland, Lithuania, Latvia, Estonia" },
-  { region: "Eastern Europe", leads: "210M+", countries: "Poland, Czech Republic, Romania, Hungary, Bulgaria, Slovakia, Croatia, Serbia, Ukraine, Russia" },
-  { region: "Southern Europe", leads: "105M+", countries: "Portugal, Greece, Turkey, Cyprus, Malta, Slovenia, Montenegro" },
+const heroRows = [
+  { email: "j.smith@btinternet.com", name: "James Smith · Smith Plumbing", domain: "btinternet.com", status: "verified" },
+  { email: "emma@clarkesolicitors.co.uk", name: "Emma Clarke · Clarke LLP", domain: ".co.uk", status: "verified" },
+  { email: "info@brighton-dental.co.uk", name: "Brighton Dental Practice", domain: ".co.uk", status: "verified" },
+  { email: "stefan.w@gmx.de", name: "Stefan Weber · Weber GmbH", domain: "gmx.de", status: "verified" },
+  { email: "claire@orange.fr", name: "Claire Martin · Innovatech", domain: "orange.fr", status: "pending" },
 ];
+
+const coverageItems = [
+  { flag: "🇬🇧", title: "United Kingdom — Live now", desc: "94,903 leads from Yell, Companies House, FreeIndex, Checkatrade, NHS registers, Ofsted, Law Society, Bark, TrustATrader and 8 more. Growing every 2 minutes." },
+  { flag: "🇩🇪🇫🇷🇮🇹", title: "Western Europe — Building now", desc: "Germany, France, Italy, Spain, Netherlands, Belgium, Switzerland, Austria. Targeting gmx.de, orange.fr, libero.it, terra.es and 40+ country-specific domains." },
+  { flag: "🇵🇱🇨🇿🇷🇴🇭🇺", title: "Eastern Europe — Queued", desc: "Poland, Czech Republic, Romania, Hungary, Bulgaria. wp.pl, seznam.cz, yahoo.ro, freemail.hu, abv.bg — domains Apollo barely tracks." },
+  { flag: "🇸🇪🇳🇴🇩🇰🇫🇮", title: "Nordics — Queued", desc: "Sweden, Norway, Denmark, Finland, Iceland. telia.com, online.no, tdcadsl.dk, kolumbus.fi — a region nobody else covers properly." },
+];
+
+// ── Component ─────────────────────────────────────────────────────────────────
 
 const Index = () => {
-  const [query, setQuery] = useState("");
-  const navigate = useNavigate();
+  const [count, setCount] = useState(94903);
+  const tickerRef = useRef<HTMLDivElement>(null);
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    navigate(`/dashboard?q=${encodeURIComponent(query)}`);
-  };
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCount((c) => c + Math.floor(Math.random() * 4) + 1);
+    }, 8000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const formatted = count.toLocaleString();
 
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
 
-      {/* Hero */}
-      <section className="relative overflow-hidden pt-32 pb-24">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5" />
-        <div className="absolute top-20 right-10 h-72 w-72 rounded-full bg-primary/10 blur-3xl" />
-        <div className="absolute bottom-10 left-10 h-56 w-56 rounded-full bg-accent/10 blur-3xl" />
-
-        <div className="container relative">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="mx-auto max-w-4xl text-center"
-          >
-            <Badge variant="secondary" className="mb-6 gap-1.5 px-4 py-1.5 text-sm font-medium">
-              <Globe className="h-3.5 w-3.5" /> #1 European B2B Lead Database — 1 Billion+ Verified Contacts
-            </Badge>
-            <h1 className="font-display text-5xl font-bold leading-tight tracking-tight md:text-6xl lg:text-7xl">
-              Access <span className="text-gradient">1 billion</span>{" "}
-              European leads
-            </h1>
-            <p className="mt-6 text-lg text-muted-foreground md:text-xl max-w-2xl mx-auto">
-              The world's largest European B2B contact database. Verified emails and phone numbers across every domain in 44 countries. 
-              Built for sales teams that dominate the European market.
-            </p>
-
-            <form onSubmit={handleSearch} className="mt-10 flex items-center gap-2 mx-auto max-w-xl">
-              <div className="relative flex-1">
-                <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                <Input
-                  placeholder="lawyers @ libero.it, CTO @ gmx.de, engineers @ abv.bg..."
-                  className="h-12 pl-10 text-base"
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                />
-              </div>
-              <Button type="submit" size="lg" className="h-12 gap-2">
-                Search <ArrowRight className="h-4 w-4" />
-              </Button>
-            </form>
-
-            <p className="mt-4 text-sm text-muted-foreground">
-              No credit card required · 50 free credits to start · Search 200+ European domains
-            </p>
-          </motion.div>
-
-          {/* Stats */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-            className="mt-16 grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6"
-          >
-            {stats.map((s) => (
-              <div key={s.label} className="rounded-xl border border-border bg-card p-5 text-center">
-                <s.icon className="mx-auto mb-2 h-5 w-5 text-primary" />
-                <div className="font-display text-2xl font-bold">{s.value}</div>
-                <div className="text-xs text-muted-foreground">{s.label}</div>
-              </div>
-            ))}
-          </motion.div>
+      {/* ── TICKER ── */}
+      <div className="mt-16 overflow-hidden bg-primary py-2.5 relative">
+        <div className="absolute top-0 left-0 w-20 h-full bg-gradient-to-r from-primary to-transparent z-10" />
+        <div className="absolute top-0 right-0 w-20 h-full bg-gradient-to-l from-primary to-transparent z-10" />
+        <div ref={tickerRef} className="flex w-max animate-[tick_55s_linear_infinite] hover:[animation-play-state:paused]">
+          {[...allDomains, ...allDomains].map((d, i) => (
+            <div key={i} className="flex items-center gap-1.5 px-4 border-r border-white/15 whitespace-nowrap font-mono text-xs text-white/75">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0" />
+              <span className="text-white font-medium">{d}</span>
+            </div>
+          ))}
         </div>
-      </section>
+      </div>
 
-      {/* European Coverage Map */}
-      <section className="py-20 bg-card border-t border-border">
-        <div className="container">
-          <div className="mx-auto max-w-2xl text-center">
-            <Badge variant="outline" className="mb-4">
-              <MapPin className="h-3 w-3 mr-1" /> Pan-European Coverage
-            </Badge>
-            <h2 className="font-display text-3xl font-bold md:text-4xl">680M+ contacts across every European country</h2>
-            <p className="mt-4 text-muted-foreground">
-              The deepest European B2B database ever built. Every domain, every country, every industry.
-            </p>
-          </div>
-          <div className="mt-12 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            {europeanCoverageStats.map((region) => (
-              <Card key={region.region} className="border-border/50 hover:border-primary/30 transition-colors">
-                <CardContent className="p-6">
-                  <div className="font-display text-2xl font-bold text-primary">{region.leads}</div>
-                  <div className="font-medium mt-1">{region.region}</div>
-                  <p className="text-xs text-muted-foreground mt-2 leading-relaxed">{region.countries}</p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-          {/* Domain badges */}
-          <div className="mt-10">
-            <p className="text-center text-sm font-medium text-muted-foreground mb-4">Tracking 200+ European email domains including:</p>
-            <div className="flex flex-wrap justify-center gap-2">
-              {europeanDomains.slice(0, 20).map((d) =>
-                d.domains.map((domain) => (
-                  <Badge key={domain} variant="outline" className="px-2.5 py-1 text-xs font-mono">
-                    {domain}
-                  </Badge>
-                ))
-              )}
-              <Badge variant="secondary" className="px-2.5 py-1 text-xs">+150 more</Badge>
+      {/* ── HERO ── */}
+      <section className="relative overflow-hidden py-16 lg:py-20 border-b border-border" style={{ background: "linear-gradient(175deg, hsl(var(--primary)/0.06) 0%, hsl(var(--background)) 55%, hsl(var(--muted)/0.3) 100%)" }}>
+        <div className="absolute inset-0 z-0" style={{
+          backgroundImage: "linear-gradient(hsl(var(--primary)/0.04) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--primary)/0.04) 1px, transparent 1px)",
+          backgroundSize: "48px 48px",
+          maskImage: "radial-gradient(ellipse 70% 60% at 50% 40%, black 30%, transparent 80%)",
+        }} />
+        <div className="container relative z-10">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+            {/* Left copy */}
+            <div>
+              <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/20 text-primary px-3.5 py-1.5 rounded-full text-xs font-mono font-medium tracking-wide mb-6">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_6px] shadow-emerald-500 animate-pulse" />
+                LIVE — <span>{formatted}</span> verified UK leads in database
+              </div>
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.08] mb-5">
+                Find any UK &<br />European business<br />contact. <span className="text-primary">Instantly.</span>
+              </h1>
+              <p className="text-base text-muted-foreground leading-relaxed mb-8 max-w-md">
+                <strong className="text-foreground font-semibold">{formatted} UK leads</strong> scraped this week from Companies House, Yell, FreeIndex, Checkatrade, NHS registers and 14 other sources — verified via SMTP and growing every 2 minutes.
+                <br /><br />
+                Expanding to <strong className="text-foreground font-semibold">680M+ European leads</strong> across 44 countries, tracking 200+ domains including gmx.de, orange.fr, wp.pl and abv.bg.
+              </p>
+              <div className="flex flex-wrap gap-3 mb-8">
+                <Button size="lg" className="gap-2 shadow-lg shadow-primary/30" onClick={() => document.getElementById("pricing")?.scrollIntoView({ behavior: "smooth" })}>
+                  Start Free — 50 Credits <ArrowRight className="h-4 w-4" />
+                </Button>
+                <Button size="lg" variant="outline" className="gap-2" onClick={() => document.getElementById("lists")?.scrollIntoView({ behavior: "smooth" })}>
+                  Browse Email Lists
+                </Button>
+              </div>
+              <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
+                {["GDPR compliant", "ICO registered", "95% deliverability", "No demo required", "Instant download"].map((t) => (
+                  <span key={t} className="flex items-center gap-1.5"><CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" />{t}</span>
+                ))}
+              </div>
+            </div>
+
+            {/* Right — Dashboard visual */}
+            <div className="relative hidden lg:block">
+              {/* Floating top badge */}
+              <div className="absolute -top-5 -right-4 z-20 bg-card border border-border rounded-2xl px-4 py-3 shadow-xl flex items-center gap-3 animate-bounce-slow">
+                <div className="w-10 h-10 rounded-lg bg-emerald-100 flex items-center justify-center text-lg">📈</div>
+                <div>
+                  <div className="text-xl font-extrabold">+2,401</div>
+                  <div className="text-[11px] text-muted-foreground font-mono">leads added today</div>
+                </div>
+              </div>
+
+              {/* Main dashboard card */}
+              <div className="bg-card border border-border rounded-3xl shadow-2xl overflow-hidden">
+                <div className="bg-muted border-b border-border px-4 py-3 flex items-center gap-3">
+                  <div className="flex gap-1.5">
+                    <div className="w-2.5 h-2.5 rounded-full bg-red-400" />
+                    <div className="w-2.5 h-2.5 rounded-full bg-yellow-400" />
+                    <div className="w-2.5 h-2.5 rounded-full bg-green-400" />
+                  </div>
+                  <div className="flex-1 bg-card border border-border rounded-md px-3 py-1 font-mono text-[11px] text-muted-foreground">app.leadpulse.com/search</div>
+                </div>
+                <div className="p-4">
+                  {/* Search */}
+                  <div className="flex items-center gap-2.5 bg-muted border border-border rounded-lg px-3.5 py-2.5 mb-3">
+                    <Search className="h-3.5 w-3.5 text-muted-foreground" />
+                    <span className="flex-1 text-[13px] text-muted-foreground">solicitors @ btinternet.com, builders @ sky.com...</span>
+                    <span className="bg-primary text-primary-foreground text-[11px] font-mono font-semibold px-3 py-1 rounded-md">Search</span>
+                  </div>
+                  {/* Filters */}
+                  <div className="flex gap-1.5 mb-3 flex-wrap">
+                    {["🇬🇧 UK", "Industry", "Domain", "✓ Verified", "📞 Has phone"].map((f, i) => (
+                      <span key={f} className={`text-[11px] font-mono px-2.5 py-1 rounded-md border cursor-pointer transition-colors ${i === 0 ? "bg-primary/10 border-primary/30 text-primary" : "bg-muted border-border text-muted-foreground hover:border-primary/30 hover:text-foreground"}`}>{f}</span>
+                    ))}
+                  </div>
+                  {/* Table header */}
+                  <div className="grid grid-cols-[2.2fr_1.4fr_0.9fr_80px] px-2.5 py-1.5 bg-muted rounded-lg mb-1 text-[10px] font-mono text-muted-foreground uppercase tracking-wider">
+                    <div>Email</div><div>Name / Company</div><div>Domain</div><div>Status</div>
+                  </div>
+                  {/* Table rows */}
+                  {heroRows.map((r) => (
+                    <div key={r.email} className="grid grid-cols-[2.2fr_1.4fr_0.9fr_80px] px-2.5 py-2.5 border-b border-border items-center hover:bg-muted/50 rounded-md cursor-pointer transition-colors">
+                      <div className="text-xs font-mono font-medium text-primary truncate">{r.email}</div>
+                      <div className="text-xs font-bold truncate">{r.name}</div>
+                      <div className="text-xs text-muted-foreground font-mono">{r.domain}</div>
+                      <div>
+                        <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-mono font-semibold border ${r.status === "verified" ? "bg-emerald-50 text-emerald-800 border-emerald-200" : "bg-amber-50 text-amber-800 border-amber-200"}`}>
+                          <span className="w-1 h-1 rounded-full bg-current" />
+                          {r.status}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div className="px-4 py-3 bg-muted border-t border-border flex items-center justify-between">
+                  <div className="font-mono text-[11px] text-muted-foreground">Showing 5 of <strong className="text-emerald-600">{formatted}</strong> results</div>
+                  <button className="bg-primary text-primary-foreground text-[11px] font-mono font-semibold px-3.5 py-1.5 rounded-md">Export CSV</button>
+                </div>
+              </div>
+
+              {/* Floating bottom badge */}
+              <div className="absolute -bottom-4 -left-4 z-20 bg-card border border-border rounded-2xl px-4 py-3 shadow-xl flex items-center gap-3 animate-bounce-slow" style={{ animationDelay: "1s" }}>
+                <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-lg">🌍</div>
+                <div>
+                  <div className="text-xl font-extrabold">44</div>
+                  <div className="text-[11px] text-muted-foreground font-mono">countries covered</div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Features */}
-      <section id="features" className="py-20 border-t border-border">
-        <div className="container">
-          <div className="mx-auto max-w-2xl text-center">
-            <h2 className="font-display text-3xl font-bold md:text-4xl">Everything Apollo has — built for Europe</h2>
-            <p className="mt-4 text-muted-foreground">Enterprise-grade prospecting tools with unmatched European data coverage.</p>
-          </div>
-          <div className="mt-14 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-            {features.map((f, i) => (
-              <motion.div
-                key={f.title}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.05 }}
-              >
-                <Card className="h-full border-border/50 hover:border-primary/30 transition-colors">
-                  <CardContent className="p-6">
-                    <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
-                      <f.icon className="h-5 w-5 text-primary" />
-                    </div>
-                    <h3 className="font-display font-semibold text-lg">{f.title}</h3>
-                    <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{f.desc}</p>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
-          </div>
+      {/* ── STATS STRIP ── */}
+      <div className="bg-muted border-b border-border">
+        <div className="container flex flex-wrap">
+          {[
+            { value: formatted, label: "UK leads live now", color: "text-emerald-600" },
+            { value: "680M+", label: "EU target pool", color: "text-primary" },
+            { value: "200+", label: "EU domains tracked", color: "" },
+            { value: "44", label: "countries covered", color: "" },
+            { value: "95%", label: "deliverability rate", color: "" },
+            { value: "17", label: "UK scrape sources", color: "text-primary" },
+          ].map((s) => (
+            <div key={s.label} className="flex-1 min-w-[50%] sm:min-w-0 py-7 px-5 border-r border-border last:border-r-0 text-center">
+              <div className={`text-3xl font-extrabold tracking-tight ${s.color}`}>{s.value}</div>
+              <div className="text-[11px] text-muted-foreground font-mono uppercase tracking-widest mt-1">{s.label}</div>
+            </div>
+          ))}
         </div>
-      </section>
+      </div>
 
-      {/* Social Proof / Testimonials */}
-      <section className="py-20 bg-card border-t border-border">
+      {/* ── COVERAGE + DOMAINS ── */}
+      <section id="coverage" className="py-20">
         <div className="container">
-          <div className="mx-auto max-w-2xl text-center">
-            <h2 className="font-display text-3xl font-bold md:text-4xl">Trusted by 10,000+ European sales teams</h2>
-            <p className="mt-4 text-muted-foreground">From Berlin to Bucharest, sales teams rely on LeadPulse to fill their pipeline.</p>
+          <div className="mb-12">
+            <div className="flex items-center gap-2 text-[11px] text-primary font-mono uppercase tracking-widest mb-3">
+              <span className="w-5 h-0.5 bg-primary rounded" /> Coverage
+            </div>
+            <h2 className="text-3xl md:text-4xl font-extrabold mb-3">UK-first. Then all of Europe.</h2>
+            <p className="text-base text-muted-foreground max-w-lg">We started with the UK because sources are most structured. Europe expands country by country from here.</p>
           </div>
-          <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {testimonials.map((t) => (
-              <Card key={t.name} className="border-border/50">
-                <CardContent className="p-6">
-                  <div className="flex gap-0.5 mb-4">
-                    {Array.from({ length: t.stars }).map((_, i) => (
-                      <Star key={i} className="h-4 w-4 fill-amber text-amber" />
-                    ))}
+          <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.6fr] gap-14 items-start">
+            {/* Coverage items */}
+            <div className="flex flex-col gap-3">
+              {coverageItems.map((c) => (
+                <div key={c.title} className="bg-card border border-border rounded-2xl p-5 flex gap-3.5 items-start hover:border-primary/30 hover:shadow-md transition-all">
+                  <div className="w-10 h-10 rounded-lg bg-primary/10 border border-primary/15 flex items-center justify-center text-lg shrink-0 mt-0.5">{c.flag}</div>
+                  <div>
+                    <div className="font-bold text-sm mb-1">{c.title}</div>
+                    <div className="text-[13px] text-muted-foreground leading-relaxed">{c.desc}</div>
                   </div>
-                  <p className="text-sm text-muted-foreground leading-relaxed">"{t.text}"</p>
-                  <div className="mt-4 border-t border-border pt-4">
-                    <div className="font-medium text-sm">{t.name}</div>
-                    <div className="text-xs text-muted-foreground">{t.role}</div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Comparison Section */}
-      <section className="py-20 border-t border-border">
-        <div className="container">
-          <div className="mx-auto max-w-2xl text-center">
-            <h2 className="font-display text-3xl font-bold md:text-4xl">Why LeadPulse over Apollo.io?</h2>
-            <p className="mt-4 text-muted-foreground">Apollo is great for the US. LeadPulse is built for Europe.</p>
-          </div>
-          <div className="mt-12 max-w-3xl mx-auto">
-            <div className="rounded-xl border border-border overflow-hidden">
-              <div className="grid grid-cols-3 bg-muted/50 p-4 font-medium text-sm">
-                <div>Feature</div>
-                <div className="text-center">LeadPulse</div>
-                <div className="text-center text-muted-foreground">Apollo.io</div>
-              </div>
-              {[
-                { feature: "European Contacts", us: "680M+", them: "~50M" },
-                { feature: "European Domains", us: "200+", them: "~20" },
-                { feature: "Country Coverage (EU)", us: "44 countries", them: "15 countries" },
-                { feature: "Local Domain Intelligence", us: "✓ Deep", them: "✗ Limited" },
-                { feature: "Eastern EU Coverage", us: "210M+ contacts", them: "~5M" },
-                { feature: "GDPR Compliant", us: "✓ Built for EU", them: "✓ Basic" },
-                { feature: "Price (Pro plan)", us: "$49/mo", them: "$99/mo" },
-              ].map((row, i) => (
-                <div key={row.feature} className={`grid grid-cols-3 p-4 text-sm ${i % 2 === 0 ? "" : "bg-muted/20"}`}>
-                  <div className="font-medium">{row.feature}</div>
-                  <div className="text-center text-primary font-semibold">{row.us}</div>
-                  <div className="text-center text-muted-foreground">{row.them}</div>
                 </div>
               ))}
             </div>
+            {/* Domain panel */}
+            <div className="bg-card border border-border rounded-2xl overflow-hidden shadow-md">
+              <div className="bg-muted border-b border-border px-5 py-3.5 flex items-center justify-between">
+                <div className="font-mono text-[11px] text-muted-foreground uppercase tracking-wider">200+ European domains tracked</div>
+                <span className="bg-emerald-50 text-emerald-700 font-mono text-[11px] font-semibold px-2.5 py-0.5 rounded-full border border-emerald-300">200+ domains</span>
+              </div>
+              <div className="p-4 max-h-[460px] overflow-y-auto">
+                {Object.entries(DOMAINS).map(([country, domains]) => (
+                  <div key={country} className="mb-4">
+                    <div className="font-mono text-[10px] text-muted-foreground uppercase tracking-wider mb-2">{FLAGS[country]} {country}</div>
+                    <div className="flex flex-wrap gap-1.5">
+                      {domains.map((d) => (
+                        <span key={d} className={`font-mono text-[11px] px-2.5 py-1 rounded-md border cursor-pointer transition-colors ${country === "United Kingdom" ? "bg-primary/10 border-primary/25 text-primary" : "bg-muted border-border text-muted-foreground hover:border-primary hover:text-primary hover:bg-primary/10"}`}>{d}</span>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className="px-5 py-3 bg-muted border-t border-border text-center font-mono text-xs text-muted-foreground">
+                Showing 80 of <strong className="text-emerald-600">200+</strong> tracked domains — full list on signup
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Pricing */}
-      <section id="pricing" className="py-20 bg-card border-t border-border">
+      {/* ── EMAIL LISTS ── */}
+      <section id="lists" className="bg-muted py-20 border-y border-border">
         <div className="container">
-          <div className="mx-auto max-w-2xl text-center">
-            <h2 className="font-display text-3xl font-bold md:text-4xl">Simple, transparent pricing</h2>
-            <p className="mt-4 text-muted-foreground">Start free. Scale as you grow. Half the price of Apollo for 10x the European data.</p>
+          <div className="text-center max-w-lg mx-auto mb-12">
+            <div className="flex items-center gap-2 text-[11px] text-primary font-mono uppercase tracking-widest mb-3 justify-center">
+              <span className="w-5 h-0.5 bg-primary rounded" /> Email lists
+            </div>
+            <h2 className="text-3xl md:text-4xl font-extrabold mb-3">Every UK industry. Every region.</h2>
+            <p className="text-base text-muted-foreground">Pre-built lists ready to download, or filter and build your own list in seconds.</p>
           </div>
-          <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-4 max-w-5xl mx-auto">
-            {pricing.map((p) => (
-              <Card key={p.name} className={`relative ${p.popular ? "border-primary shadow-lg shadow-primary/10" : "border-border/50"}`}>
-                {p.popular && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                    <Badge className="bg-primary text-primary-foreground">Most Popular</Badge>
-                  </div>
-                )}
-                <CardContent className="p-6 pt-8">
-                  <h3 className="font-display font-semibold text-lg">{p.name}</h3>
-                  <div className="mt-2">
-                    <span className="font-display text-4xl font-bold">{p.price}</span>
-                    {p.price !== "Free" && p.price !== "Custom" && <span className="text-muted-foreground text-sm">/mo</span>}
-                  </div>
-                  <p className="text-sm text-muted-foreground mt-1">{p.credits}</p>
-                  <ul className="mt-6 space-y-2.5">
-                    {p.features.map((f) => (
-                      <li key={f} className="flex items-center gap-2 text-sm">
-                        <CheckCircle2 className="h-4 w-4 text-emerald shrink-0" />
-                        {f}
-                      </li>
-                    ))}
-                  </ul>
-                  <Button className="w-full mt-6" variant={p.popular ? "default" : "outline"} asChild>
-                    <Link to="/signup">{p.price === "Free" ? "Start Free" : p.price === "Custom" ? "Contact Sales" : "Get Started"}</Link>
-                  </Button>
-                </CardContent>
-              </Card>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-px bg-border border border-border rounded-2xl overflow-hidden">
+            {emailLists.map((l) => (
+              <div key={l.title} className="bg-card p-6 hover:bg-muted/50 transition-colors cursor-pointer relative group overflow-hidden">
+                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-primary to-emerald-500 scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-300" />
+                <div className="text-2xl font-extrabold text-primary mb-1.5 tracking-tight">{l.count}</div>
+                <div className="text-[15px] font-bold mb-2">{l.title}</div>
+                <div className="text-[13px] text-muted-foreground leading-relaxed">{l.desc}</div>
+                <div className="flex flex-wrap gap-1.5 mt-3">
+                  {l.tags.map((t) => (
+                    <span key={t} className="text-[11px] font-mono text-primary bg-primary/10 border border-primary/15 px-2 py-0.5 rounded">{t}</span>
+                  ))}
+                </div>
+              </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="py-20 border-t border-border">
+      {/* ── HOW IT WORKS ── */}
+      <section id="how" className="py-20">
         <div className="container">
-          <div className="mx-auto max-w-2xl text-center">
-            <h2 className="font-display text-3xl font-bold md:text-4xl">Ready to dominate European sales?</h2>
-            <p className="mt-4 text-muted-foreground">
-              Join 10,000+ sales teams using LeadPulse to find, verify, and close European prospects.
-              Access 1 billion contacts across 44 countries.
-            </p>
-            <div className="mt-8 flex items-center justify-center gap-4 flex-wrap">
-              <Button size="lg" className="gap-2" asChild>
+          <div className="text-center max-w-md mx-auto mb-12">
+            <div className="flex items-center gap-2 text-[11px] text-primary font-mono uppercase tracking-widest mb-3 justify-center">
+              <span className="w-5 h-0.5 bg-primary rounded" /> How it works
+            </div>
+            <h2 className="text-3xl md:text-4xl font-extrabold">From search to CSV in under 60 seconds</h2>
+          </div>
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 relative">
+            <div className="hidden lg:block absolute top-[26px] left-[12.5%] right-[12.5%] h-px" style={{ backgroundImage: "repeating-linear-gradient(90deg, hsl(var(--border)) 0, hsl(var(--border)) 8px, transparent 8px, transparent 16px)" }} />
+            {howSteps.map((s) => (
+              <div key={s.num} className="text-center">
+                <div className={`w-12 h-12 rounded-full mx-auto mb-4 flex items-center justify-center text-xl font-extrabold relative z-10 border-2 ${s.active ? "bg-primary border-primary text-primary-foreground shadow-lg shadow-primary/35" : "bg-card border-border text-muted-foreground"}`}>{s.num}</div>
+                <div className="font-bold text-[15px] mb-2">{s.title}</div>
+                <div className="text-[13px] text-muted-foreground leading-relaxed">{s.desc}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── PRICING ── */}
+      <section id="pricing" className="bg-muted py-20 border-t border-border">
+        <div className="container">
+          <div className="text-center max-w-lg mx-auto mb-12">
+            <div className="flex items-center gap-2 text-[11px] text-primary font-mono uppercase tracking-widest mb-3 justify-center">
+              <span className="w-5 h-0.5 bg-primary rounded" /> Pricing
+            </div>
+            <h2 className="text-3xl md:text-4xl font-extrabold mb-3">No demos. No £15,000 platform fees.</h2>
+            <p className="text-base text-muted-foreground">Cognism charges £15,000 before adding a single user. Our Pro plan is $49/month. No contract. Instant access.</p>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {pricingPlans.map((p) => (
+              <div key={p.tier} className={`bg-card border-2 rounded-2xl p-7 relative transition-all hover:-translate-y-1 hover:shadow-xl ${p.featured ? "border-primary shadow-lg shadow-primary/15" : "border-border hover:border-muted-foreground/30"}`}>
+                {p.featured && (
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground font-mono text-[10px] font-bold px-3.5 py-1 rounded-full tracking-wider">MOST POPULAR</div>
+                )}
+                <div className="font-mono text-[11px] text-muted-foreground uppercase tracking-widest mb-3.5">{p.tier}</div>
+                <div className="text-4xl font-extrabold tracking-tight leading-none mb-1">{p.price}<span className="text-base font-medium text-muted-foreground">{p.sub}</span></div>
+                <div className="font-mono text-xs text-muted-foreground mb-5">{p.credits}</div>
+                <ul className="mb-5 space-y-0">
+                  {p.features.map((f) => (
+                    <li key={f} className="text-[13px] text-muted-foreground py-1.5 border-b border-border last:border-b-0 flex items-center gap-2">
+                      <span className="text-primary text-xs">→</span>{f}
+                    </li>
+                  ))}
+                </ul>
+                <Button className="w-full" variant={p.featured ? "default" : "outline"} asChild>
+                  <Link to="/signup">{p.cta}</Link>
+                </Button>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── COMPARISON ── */}
+      <section id="compare" className="py-20">
+        <div className="container">
+          <div className="text-center max-w-lg mx-auto mb-12">
+            <div className="flex items-center gap-2 text-[11px] text-primary font-mono uppercase tracking-widest mb-3 justify-center">
+              <span className="w-5 h-0.5 bg-primary rounded" /> vs competitors
+            </div>
+            <h2 className="text-3xl md:text-4xl font-extrabold">Cheaper than a Cognism demo.<br />More EU data than Apollo.</h2>
+          </div>
+          <div className="border border-border rounded-2xl overflow-hidden shadow-md max-w-4xl mx-auto">
+            <div className="grid grid-cols-[2.2fr_1fr_1fr_1fr_1fr] bg-muted border-b-2 border-border px-6 py-3.5 gap-2">
+              <div className="text-sm font-bold">Feature</div>
+              <div className="text-sm font-bold text-primary text-center">LeadPulse</div>
+              <div className="text-sm font-bold text-muted-foreground text-center">Cognism</div>
+              <div className="text-sm font-bold text-muted-foreground text-center">Apollo.io</div>
+              <div className="text-sm font-bold text-muted-foreground text-center hidden md:block">UK Mktg Mgmt</div>
+            </div>
+            {comparisonRows.map((r, i) => (
+              <div key={r.feature} className={`grid grid-cols-[2.2fr_1fr_1fr_1fr_1fr] px-6 py-3.5 border-b border-border last:border-b-0 items-center gap-2 ${i % 2 === 1 ? "bg-muted/50" : "bg-card"}`}>
+                <div className="text-sm font-medium">{r.feature}</div>
+                <div className="text-sm text-center text-primary font-bold">{r.us}</div>
+                <div className="text-sm text-center text-muted-foreground">{r.cognism}</div>
+                <div className="text-sm text-center text-muted-foreground">{r.apollo}</div>
+                <div className="text-sm text-center text-muted-foreground hidden md:block">{r.ukm}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── TESTIMONIALS ── */}
+      <section className="bg-muted py-20 border-t border-border">
+        <div className="container">
+          <div className="text-center max-w-md mx-auto mb-12">
+            <div className="flex items-center gap-2 text-[11px] text-primary font-mono uppercase tracking-widest mb-3 justify-center">
+              <span className="w-5 h-0.5 bg-primary rounded" /> What people say
+            </div>
+            <h2 className="text-3xl md:text-4xl font-extrabold">Sales teams that switched from Cognism</h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {testimonials.map((t) => (
+              <div key={t.name} className="bg-card border border-border rounded-2xl p-6 hover:shadow-lg transition-all">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-11 h-11 rounded-full bg-gradient-to-br from-primary to-emerald-500 flex items-center justify-center text-sm font-extrabold text-white shrink-0">{t.initials}</div>
+                  <div>
+                    <div className="font-bold text-sm">{t.name}</div>
+                    <div className="text-xs text-muted-foreground font-mono">{t.role}</div>
+                  </div>
+                </div>
+                <div className="text-primary text-sm tracking-widest mb-3">★★★★★</div>
+                <div className="text-sm text-muted-foreground leading-relaxed">{t.text}</div>
+                <div className="mt-3.5 pt-3.5 border-t border-border font-mono text-[11px] text-emerald-600 font-semibold">{t.domains}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── CTA ── */}
+      <section className="py-20">
+        <div className="max-w-3xl mx-auto px-8">
+          <div className="bg-primary rounded-3xl px-8 py-16 md:px-12 md:py-20 text-center relative overflow-hidden">
+            <div className="absolute inset-0" style={{
+              backgroundImage: "linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px)",
+              backgroundSize: "40px 40px",
+            }} />
+            <h2 className="text-3xl md:text-4xl font-extrabold text-primary-foreground mb-4 relative">Your scraper is running.<br />Start searching your leads.</h2>
+            <p className="text-base text-primary-foreground/75 mb-10 relative">{formatted} verified UK leads right now. Growing every 2 minutes.<br />No demo. No contract. No £15,000 platform fee.</p>
+            <div className="flex gap-3.5 justify-center flex-wrap relative">
+              <Button size="lg" variant="secondary" className="gap-2 shadow-lg font-bold" asChild>
                 <Link to="/signup">Start Free — 50 Credits <ArrowRight className="h-4 w-4" /></Link>
               </Button>
-              <Button size="lg" variant="outline" className="gap-2" asChild>
-                <Link to="/dashboard">Try a Search <Search className="h-4 w-4" /></Link>
+              <Button size="lg" variant="outline" className="gap-2 border-primary-foreground/40 text-primary-foreground hover:border-primary-foreground hover:bg-primary-foreground/10" onClick={() => document.getElementById("lists")?.scrollIntoView({ behavior: "smooth" })}>
+                Browse UK Email Lists
               </Button>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="border-t border-border bg-card py-12">
+      {/* ── FOOTER ── */}
+      <footer className="bg-foreground py-12 pb-8">
         <div className="container">
-          <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
-            <div className="flex items-center gap-2 font-display font-bold">
-              <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary">
-                <Zap className="h-3.5 w-3.5 text-primary-foreground" />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[2fr_1fr_1fr_1fr] gap-10 mb-12">
+            <div>
+              <div className="flex items-center gap-2.5 mb-3.5">
+                <div className="w-8 h-8 rounded-lg bg-white/12 border border-white/20 flex items-center justify-center text-white font-mono text-sm font-bold">LP</div>
+                <span className="text-white text-lg font-extrabold tracking-tight">LeadPulse</span>
               </div>
-              LeadPulse
+              <p className="text-[13px] text-white/45 leading-relaxed max-w-[240px]">UK and European B2B lead intelligence. Verified emails, direct dials and decision-maker data across 44 countries. ICO registered. GDPR compliant.</p>
             </div>
-            <div className="flex gap-6 text-sm text-muted-foreground">
-              <a href="#" className="hover:text-foreground transition-colors">Privacy</a>
-              <a href="#" className="hover:text-foreground transition-colors">Terms</a>
-              <a href="#" className="hover:text-foreground transition-colors">GDPR</a>
-              <a href="#" className="hover:text-foreground transition-colors">Contact</a>
-              <a href="#" className="hover:text-foreground transition-colors">API Docs</a>
+            {[
+              { title: "Product", links: ["UK Email Lists", "EU Coverage", "Live Dashboard", "API Access", "CRM Integrations"] },
+              { title: "Company", links: ["About", "GDPR Policy", "Privacy", "Terms of Use", "Contact"] },
+              { title: "Resources", links: ["API Docs", "Domain Index", "Data Sources", "Blog", "Status"] },
+            ].map((col) => (
+              <div key={col.title}>
+                <div className="font-mono text-[11px] text-white/35 uppercase tracking-widest mb-3.5">{col.title}</div>
+                <ul className="space-y-2">
+                  {col.links.map((l) => (
+                    <li key={l}><a href="#" className="text-[13px] text-white/50 hover:text-white transition-colors">{l}</a></li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+          <div className="border-t border-white/8 pt-6 flex flex-wrap items-center justify-between gap-3.5">
+            <div className="text-xs text-white/30 font-mono">© 2026 LeadPulse Ltd. All rights reserved.</div>
+            <div className="flex gap-2">
+              {["ICO Registered", "GDPR Compliant", "95% Deliverability"].map((b) => (
+                <span key={b} className="bg-white/6 border border-white/10 rounded-md px-2.5 py-1 text-[11px] font-mono text-white/40">{b}</span>
+              ))}
             </div>
-            <p className="text-sm text-muted-foreground">© 2026 LeadPulse. All rights reserved.</p>
           </div>
         </div>
       </footer>
