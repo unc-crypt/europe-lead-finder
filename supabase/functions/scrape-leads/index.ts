@@ -1,3 +1,4 @@
+import { authorizeRequest } from "../_shared/auth.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
@@ -225,6 +226,9 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
+
+  const unauthorized = await authorizeRequest(req, "user", corsHeaders);
+  if (unauthorized) return unauthorized;
 
   try {
     const supabase = createClient(
