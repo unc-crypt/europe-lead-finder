@@ -43,6 +43,14 @@ export function useLeadSearch() {
   const [loading, setLoading] = useState(false);
 
   const search = async (params: SearchParams) => {
+    const { data: sessionData } = await supabase.auth.getSession();
+    if (!sessionData.session) {
+      // Lead data stays private: searching needs a signed-in account even in preview.
+      toast.error("Please sign in to search leads.", {
+        action: { label: "Sign in", onClick: () => { window.location.href = "/login"; } },
+      });
+      return;
+    }
     setLoading(true);
     try {
       const { data, error } = await supabase.functions.invoke("scrape-leads", {
