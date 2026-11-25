@@ -1,4 +1,5 @@
 # Authentication and backend lockdown
+- [x] Temporarily open preview pages and hide authentication controls; preserve production authentication and backend security. All four pages and skipped login/signup verified on mobile; 15 security/access tests pass.
 - [x] Implement controlled email/password forms, recovery pages, session context, route protection, and sign-out.
 - [x] Create private profiles and revoke frontend access to leads.
 - [x] Enforce user/service-only access across all seven functions.

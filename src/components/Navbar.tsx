@@ -6,6 +6,7 @@ import { Search, Menu, X, Zap, LogOut } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import { authError } from "@/lib/auth-validation";
+import { previewAccess } from "@/lib/preview-access";
 
 const Navbar = () => {
   const { user, signOut } = useAuth();
@@ -53,7 +54,7 @@ const Navbar = () => {
 
         <div className="hidden items-center gap-2.5 md:flex">
           {isLanding ? (
-            user ? <Button size="sm" asChild><Link to="/dashboard">Dashboard</Link></Button> : <>
+            (previewAccess || user) ? <Button size="sm" asChild><Link to="/dashboard">Dashboard</Link></Button> : <>
               <Button variant="outline" size="sm" className="font-semibold" asChild>
                 <Link to="/login">Sign In</Link>
               </Button>
@@ -70,7 +71,7 @@ const Navbar = () => {
               <Button variant="ghost" size="icon" asChild>
                 <Link to="/dashboard"><Search className="h-4 w-4" /></Link>
               </Button>
-              <Button variant="outline" size="sm" onClick={handleSignOut} disabled={signingOut}><LogOut className="mr-2 h-4 w-4" />{signingOut ? "Signing out…" : "Sign out"}</Button>
+              {!previewAccess && <Button variant="outline" size="sm" onClick={handleSignOut} disabled={signingOut}><LogOut className="mr-2 h-4 w-4" />{signingOut ? "Signing out…" : "Sign out"}</Button>}
             </>
           )}
         </div>
@@ -87,7 +88,7 @@ const Navbar = () => {
                 <a href="#coverage" className="text-sm" onClick={() => setOpen(false)}>Coverage</a>
                 <a href="#lists" className="text-sm" onClick={() => setOpen(false)}>Email Lists</a>
                 <a href="#pricing" className="text-sm" onClick={() => setOpen(false)}>Pricing</a>
-                {user ? <Link to="/dashboard" className="text-sm font-medium text-primary" onClick={() => setOpen(false)}>Dashboard</Link> : <>
+                {(previewAccess || user) ? <Link to="/dashboard" className="text-sm font-medium text-primary" onClick={() => setOpen(false)}>Dashboard</Link> : <>
                   <Link to="/login" className="text-sm" onClick={() => setOpen(false)}>Sign In</Link>
                   <Link to="/signup" className="text-sm font-medium text-primary" onClick={() => setOpen(false)}>Get Free Leads</Link>
                 </>}
@@ -98,7 +99,7 @@ const Navbar = () => {
                 <Link to="/lists" className="text-sm" onClick={() => setOpen(false)}>My Lists</Link>
                 <Link to="/credits" className="text-sm" onClick={() => setOpen(false)}>Credits</Link>
                 <Link to="/settings" className="text-sm" onClick={() => setOpen(false)}>Settings</Link>
-                <Button variant="outline" onClick={handleSignOut} disabled={signingOut}><LogOut className="mr-2 h-4 w-4" />Sign out</Button>
+                {!previewAccess && <Button variant="outline" onClick={handleSignOut} disabled={signingOut}><LogOut className="mr-2 h-4 w-4" />Sign out</Button>}
               </>
             )}
           </div>

@@ -1,4 +1,5 @@
 # Architecture rules
-- Keep session state in AuthProvider, register the auth listener before loading the session, and validate restored identity with getUser; protected routes must wait for resolution.
+- Keep session state in AuthProvider, register the auth listener before loading the session, and validate restored identity with getUser; production protected routes must wait for resolution.
+- Gate temporary page-only preview access with Vite's DEV flag; never use it for backend authorization, so published builds retain authentication.
 - Centralize edge authorization in functions/_shared: search endpoints validate user identity, background endpoints accept only the service-role credential; perform checks after preflight and before any work.
 - Leads are service-only data; browser access must use an authenticated edge function, while profiles use owner-only RLS.

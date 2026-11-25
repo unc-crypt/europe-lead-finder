@@ -4,8 +4,10 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { ProtectedRoute, GuestRoute } from "@/components/ProtectedRoute";
 
 const state = vi.hoisted(() => ({ user: null as null | { id: string }, loading: false, isRecovery: false }));
+const preview = vi.hoisted(() => ({ enabled: false }));
+vi.mock("@/lib/preview-access", () => ({ get previewAccess() { return preview.enabled; } }));
 vi.mock("@/contexts/AuthContext", () => ({ useAuth: () => state }));
-afterEach(() => { cleanup(); state.user = null; state.loading = false; state.isRecovery = false; });
+afterEach(() => { cleanup(); state.user = null; state.loading = false; state.isRecovery = false; preview.enabled = false; });
 function mount(path: string, guest = false) {
   render(<MemoryRouter initialEntries={[path]}><Routes>
     <Route element={guest ? <GuestRoute /> : <ProtectedRoute />}><Route path={guest ? "/login" : "/dashboard"} element={<div>Allowed view</div>} /></Route>
@@ -14,6 +16,8 @@ function mount(path: string, guest = false) {
   </Routes></MemoryRouter>);
 }
 describe("session route rules", () => {
+  it("opens the preview dashboard without a session", () => { preview.enabled = true; state.loading = true; mount("/dashboard"); expect(screen.getByText("Allowed view")).toBeInTheDocument(); });
+  it("skips login in preview", () => { preview.enabled = true; mount("/login", true); expect(screen.getByText("Redirect target")).toBeInTheDocument(); });
   it("blocks unauthenticated dashboard visits", () => { mount("/dashboard"); expect(screen.getByText("Redirect target")).toBeInTheDocument(); });
   it("allows signed-in dashboard visits", () => { state.user = { id: "test-user" }; mount("/dashboard"); expect(screen.getByText("Allowed view")).toBeInTheDocument(); });
   it("waits while session resolves", () => { state.loading = true; mount("/dashboard"); expect(screen.getByRole("status")).toBeInTheDocument(); expect(screen.queryByText("Allowed view")).not.toBeInTheDocument(); });
